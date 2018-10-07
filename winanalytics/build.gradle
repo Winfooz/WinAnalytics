@@ -1,5 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: "kotlin-android"
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.github.WinfoozLtd'
 
 android {
     compileSdkVersion 28
@@ -34,4 +37,14 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true
     }
+}
+
+// build a jar with source files
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
 }

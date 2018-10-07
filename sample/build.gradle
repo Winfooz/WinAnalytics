@@ -34,7 +34,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.71"
 
     implementation project(':annotations')
-    implementation project(':winlog')
+    implementation project(':winanalytics')
     kapt project(':compiler')
 
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
