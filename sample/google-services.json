@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "333103479535",
+    "firebase_url": "https://winanalytics-4ed8a.firebaseio.com",
+    "project_id": "winanalytics-4ed8a",
+    "storage_bucket": "winanalytics-4ed8a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:333103479535:android:f4f91afe1a17cffb",
+        "android_client_info": {
+          "package_name": "com.winfooz.winanalytics.sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "333103479535-rjj5bjh7a7ufq1p699su5qv0jbp83fan.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4rf94GUQn84ttPx5KA9zFfqWWjHlHy2U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
