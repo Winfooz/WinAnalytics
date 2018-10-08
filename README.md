@@ -102,9 +102,9 @@ allprojects {
 App-level build.gradle \(\<project>/\<app-module>/build.gradle):
 
 ```
-implementation 'com.github.Winfooz.WinAnalytics:annotations:v1.0.2-beta'
-implementation 'com.github.Winfooz.WinAnalytics:winanalytics:v1.0.2-beta'
-kapt 'com.github.Winfooz.WinAnalytics:compiler:v1.0.2-beta'
+implementation 'com.github.Winfooz.WinAnalytics:annotations:v1.0.3-beta'
+implementation 'com.github.Winfooz.WinAnalytics:winanalytics:v1.0.3-beta'
+kapt 'com.github.Winfooz.WinAnalytics:compiler:v1.0.3-beta'
 ```
 
 # Support annotations
