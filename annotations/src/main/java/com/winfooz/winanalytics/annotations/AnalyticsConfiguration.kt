@@ -5,4 +5,4 @@ package com.winfooz.winanalytics.annotations
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class AnalyticsConfiguration(vararg val value: WinAnalyticsClient)
+annotation class AnalyticsConfiguration(vararg val value: AnalyticsClient)

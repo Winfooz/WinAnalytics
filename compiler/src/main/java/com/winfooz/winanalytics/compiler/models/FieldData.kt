@@ -1,6 +1,6 @@
 package com.winfooz.winanalytics.compiler.models
 
-import com.winfooz.winanalytics.annotations.WinEvent
+import com.winfooz.winanalytics.annotations.Event
 import com.winfooz.winanalytics.annotations.AnalyticsEmbedded
 import com.winfooz.winanalytics.annotations.Analytics
 import javax.lang.model.element.Element
@@ -33,7 +33,7 @@ class FieldData(
         var name: String,
 
         /**
-         * The [Analytics] annotation for read [WinEvent] annotations.
+         * The [Analytics] annotation for read [Event] annotations.
          */
         var type: Annotation
 )

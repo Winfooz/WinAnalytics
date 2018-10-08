@@ -5,7 +5,7 @@ package com.winfooz.winanalytics.annotations
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class WinAnalyticsClient(
+annotation class AnalyticsClient(
         val key: String = "",
         val type: AnalyticsTypes,
         val enabled: Boolean = true

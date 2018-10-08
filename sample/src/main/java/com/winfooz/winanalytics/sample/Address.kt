@@ -1,15 +1,15 @@
 package com.winfooz.winanalytics.sample
 
 import com.winfooz.winanalytics.annotations.Analytics
-import com.winfooz.winanalytics.annotations.WinEvent
+import com.winfooz.winanalytics.annotations.Event
 
 data class Address(
-        @Analytics(WinEvent("Login"))
+        @Analytics(Event("Login"))
         val address: String,
 
-        @Analytics(WinEvent("Login"))
+        @Analytics(Event("Login"))
         val latitude: String,
 
-        @Analytics(WinEvent("Login"))
+        @Analytics(Event("Login"))
         val longitude: String
 )

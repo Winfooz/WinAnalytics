@@ -1,26 +1,23 @@
 package com.winfooz.winanalytics.sample
 
-import com.winfooz.winanalytics.annotations.WinEvent
+import com.winfooz.winanalytics.annotations.Event
 import com.winfooz.winanalytics.annotations.AnalyticsEmbedded
 import com.winfooz.winanalytics.annotations.Analytics
 
 data class User(
         @Analytics(
-                WinEvent("Login"),
-                WinEvent("Logout")
+                Event("Login"),
+                Event("Logout")
         )
         val name: String,
 
-        @Analytics(WinEvent("Login"), WinEvent("Logout"))
+        @Analytics(Event("Login"), Event("Logout"))
         val email: String,
 
-        @Analytics(WinEvent("Login"))
-        val password: String,
-
-        @Analytics(WinEvent("Login"))
+        @Analytics(Event("Login"))
         val phone: String,
 
-        @Analytics(WinEvent("Login"))
+        @Analytics(Event("Login"))
         val age: Int,
 
         @AnalyticsEmbedded

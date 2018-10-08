@@ -22,8 +22,8 @@ class MainActivity : AppCompatActivity() {
         val address = Address("Address", "11.25454654", "10,45454654664")
         addressEmbedded = Address("Address", "11.25454654", "10,45454654664")
 
-        user = User("Name", "email@email.com", "123456789", "0000000000", 0, address)
-        userEmbedded = User("Name", "email@email.com", "123456789", "0000000000", 0, address)
+        user = User("Name", "email@email.com", "123456789", 0, address)
+        userEmbedded = User("Name", "email@email.com", "123456789", 0, address)
 
         findViewById<View>(R.id.hello_world).setOnClickListener(this::onHelloWorldClicked)
     }
