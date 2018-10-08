@@ -115,3 +115,6 @@ kapt 'com.github.Winfooz.WinAnalytics:compiler:v1.0.2-beta'
 @AnalyticsTypes()
 @WinAnalyticsClient()
 ```
+## License
+
+WinAnalytics is released under the MIT license. [See LICENSE](https://github.com/Winfooz/WinAnalytics/blob/master/LICENSE) for details.
