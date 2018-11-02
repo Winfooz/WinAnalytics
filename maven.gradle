@@ -22,13 +22,6 @@ install {
                     url licenseUrl
                 }
             }
-            developers {
-                developer {
-                    id developerId
-                    name developerName
-                    email developerEmail
-                }
-            }
             scm {
                 connection gitUrl
                 developerConnection gitUrl

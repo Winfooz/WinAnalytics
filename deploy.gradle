@@ -17,10 +17,6 @@ ext {
 
     libraryVersion = POM_VERSION
 
-    developerId = 'mnayef95'
-    developerName = 'Mohamed Hamdan'
-    developerEmail = 'mhamdan@winfooz.com'
-
     licenseName = 'MIT'
     licenseUrl = 'https://github.com/Winfooz/WinAnalytics/LICENSE'
     allLicenses = ["MIT"]
