@@ -1,13 +1,13 @@
-apply plugin: 'java-library'
-apply plugin: 'kotlin'
-apply plugin: 'com.github.dcendents.android-maven'
-
-group = 'com.github.Winfooz.WinAnalytics'
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.71"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.0"
 }
+apply from: rootProject.file('deploy.gradle')
