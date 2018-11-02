@@ -1,4 +1,6 @@
 # WinAnalytics(Beta) library
+[![buddy pipeline](https://app.buddy.works/mohamednayef95/winanalytics/pipelines/pipeline/158566/badge.svg?token=071324226326a701b263c3a2755acc1f179227f6bb2f1d11c84cbbfd3e77c732 "buddy pipeline")](https://app.buddy.works/mohamednayef95/winanalytics/pipelines/pipeline/158566) [ ![Download](https://api.bintray.com/packages/mnayef95/WinAnalytics/com.winfooz.winanalytics%3Awinanalytics/images/download.svg) ](https://bintray.com/mnayef95/WinAnalytics/com.winfooz.winanalytics%3Awinanalytics/_latestVersion)
+
 A light-weight android library that can be quickly integrated into any app to use analytics tools.
 - Full Kotlin support.
 - Support multiple analytical tools e.g(Firebase, Fabric, Mixpanel).

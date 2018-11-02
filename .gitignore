@@ -7,7 +7,7 @@
 /.idea/workspace.xml
 .DS_Store
 /build
-compiler/build
+/compiler/build
 /captures
 .externalNativeBuild
 .idea/

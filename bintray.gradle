@@ -1,0 +1,72 @@
+apply plugin: 'com.jfrog.bintray'
+
+version = libraryVersion
+
+if (project.hasProperty("android")) {
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.srcDirs
+    }
+} else {
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+}
+
+bintrayUpload.dependsOn assemble
+bintrayUpload.dependsOn sourcesJar
+
+artifacts {
+    archives sourcesJar
+}
+
+bintray {
+    user = getBintrayUser()
+    key = getBintrayKey()
+
+    configurations = ['archives']
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        publish = true
+        publicDownloadNumbers = true
+        version {
+            desc = libraryDescription
+            gpg {
+                sign = true
+            }
+        }
+    }
+}
+
+def getBintrayUser() {
+    if (System.getenv('BINTRAY_USER')) {
+        logger.lifecycle(System.getenv('BINTRAY_USER'))
+        return System.getenv('BINTRAY_USER')
+    } else if (rootProject.file('local.properties').exists()) {
+        Properties properties = new Properties()
+        properties.load(rootProject.file('local.properties').newDataInputStream())
+        return properties.getProperty('bintray.user')
+    } else {
+        logger.lifecycle("Warning: Could not find BINTRAY_USER in environment or local.properties")
+    }
+}
+
+def getBintrayKey() {
+    if (System.getenv('BINTRAY_KEY')) {
+        logger.lifecycle(System.getenv('BINTRAY_KEY'))
+        return System.getenv('BINTRAY_KEY')
+    } else if (rootProject.file('local.properties').exists()) {
+        Properties properties = new Properties()
+        properties.load(rootProject.file('local.properties').newDataInputStream())
+        return properties.getProperty('bintray.apikey')
+    } else {
+        logger.lifecycle("Warning: Could not find BINTRAY_KEY in environment or local.properties")
+    }
+}

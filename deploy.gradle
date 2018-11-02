@@ -1,0 +1,33 @@
+/**
+ * Bintray release configuration
+ * */
+ext {
+    bintrayRepo = 'WinAnalytics'
+    bintrayName = POM_BINTRAY_NAME
+
+    publishedGroupId = 'com.winfooz.winanalytics'
+    libraryName = 'WinAnalytics'
+    artifact = POM_ARTIFACT_ID
+    packagingType = POM_PACKAGING
+
+    libraryDescription = POM_DESCRIPTION
+
+    siteUrl = 'https://github.com/Winfooz/WinAnalytics'
+    gitUrl = 'https://github.com/Winfooz/WinAnalytics.git'
+
+    libraryVersion = POM_VERSION
+
+    developerId = 'mnayef95'
+    developerName = 'Mohamed Hamdan'
+    developerEmail = 'mhamdan@winfooz.com'
+
+    licenseName = 'MIT'
+    licenseUrl = 'https://github.com/Winfooz/WinAnalytics/LICENSE'
+    allLicenses = ["MIT"]
+}
+
+// Set up the Android Maven publication.
+apply from: rootProject.file('maven.gradle')
+
+// Publish on Bintray.
+apply from: rootProject.file('bintray.gradle')
