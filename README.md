@@ -86,27 +86,6 @@ protected void onCreate(Bundle savedInstanceState) {
     Analytics.getInstance(applicationContext).mainActivityAnalytics.loginEvent(this)
 }
 ```
-
-<<<<<<< Updated upstream
-# How do I get set up?
-
-Project-level build.gradle \(\<project>/build.gradle):
-```
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-
-App-level build.gradle \(\<project>/\<app-module>/build.gradle):
-
-```
-implementation 'com.github.Winfooz.WinAnalytics:annotations:v1.0.3-beta'
-implementation 'com.github.Winfooz.WinAnalytics:winanalytics:v1.0.3-beta'
-kapt 'com.github.Winfooz.WinAnalytics:compiler:v1.0.3-beta'
-=======
 # Download
 ```groovy
 dependencies {
@@ -114,7 +93,6 @@ dependencies {
    implementation 'com.winfooz.winanalytics:winanalytics:1.0.0-beta'
    kapt 'com.winfooz.winanalytics:compiler:1.0.0-beta'
 }
->>>>>>> Stashed changes
 ```
 
 # Support annotations
