@@ -1,4 +1,6 @@
 # WinAnalytics(Beta) library
+[![Build Status](https://travis-ci.org/Winfooz/WinAnalytics.svg?branch=master)](https://travis-ci.org/Winfooz/WinAnalytics) [![buddy pipeline](https://app.buddy.works/mohamednayef95/winanalytics-1/pipelines/pipeline/158574/badge.svg?token=071324226326a701b263c3a2755acc1f179227f6bb2f1d11c84cbbfd3e77c732 "buddy pipeline")](https://app.buddy.works/mohamednayef95/winanalytics-1/pipelines/pipeline/158574) [ ![Download](https://api.bintray.com/packages/mnayef95/WinAnalytics/com.winfooz.winanalytics%3Awinanalytics/images/download.svg) ](https://bintray.com/mnayef95/WinAnalytics/com.winfooz.winanalytics%3Awinanalytics/_latestVersion) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-WinAnalytics-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/7197) ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg) ![GitHub](https://img.shields.io/badge/Support-Kotlin%20%7C%20Java-lightgrey.svg)
+
 A light-weight android library that can be quickly integrated into any app to use analytics tools.
 - Full Kotlin support.
 - Support multiple analytical tools e.g(Firebase, Fabric, Mixpanel).
@@ -87,34 +89,14 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-<<<<<<< Updated upstream
-# How do I get set up?
-
-Project-level build.gradle \(\<project>/build.gradle):
-```
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-
-App-level build.gradle \(\<project>/\<app-module>/build.gradle):
-
-```
-implementation 'com.github.Winfooz.WinAnalytics:annotations:v1.0.3-beta'
-implementation 'com.github.Winfooz.WinAnalytics:winanalytics:v1.0.3-beta'
-kapt 'com.github.Winfooz.WinAnalytics:compiler:v1.0.3-beta'
-=======
 # Download
+
 ```groovy
 dependencies {
-   implementation 'com.winfooz.winanalytics:annotations:1.0.0-beta'
-   implementation 'com.winfooz.winanalytics:winanalytics:1.0.0-beta'
-   kapt 'com.winfooz.winanalytics:compiler:1.0.0-beta'
+    implementation 'com.winfooz.winanalytics:annotations:1.0.0-beta'
+    implementation 'com.winfooz.winanalytics:winanalytics:1.0.0-beta'
+    kapt 'com.winfooz.winanalytics:compiler:1.0.0-beta'
 }
->>>>>>> Stashed changes
 ```
 
 # Support annotations
@@ -123,7 +105,7 @@ dependencies {
 @AnalyticsConfiguration()
 @AnalyticsEmbedded()
 @AnalyticsTypes()
-@WinAnalyticsClient()
+@AnalyticsClient()
 ```
 ## License
 
