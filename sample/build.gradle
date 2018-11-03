@@ -5,6 +5,7 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.winfooz.winanalytics.sample"
@@ -13,7 +14,7 @@ android {
         targetSdkVersion 28
 
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
 
     buildTypes {
@@ -31,7 +32,7 @@ android {
 
 dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.71"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.0"
 
     implementation project(':annotations')
     implementation project(':winanalytics')

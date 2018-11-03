@@ -1,18 +1,18 @@
-apply plugin: 'com.android.library'
-apply plugin: "kotlin-android"
-apply plugin: 'com.github.dcendents.android-maven'
-
-group = 'com.github.Winfooz.WinAnalytics'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
 
 android {
     compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
 
         versionCode 1
-        versionName "1.0.2-beta"
+        versionName POM_VERSION
     }
 
     buildTypes {
@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.71"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.0"
 
     implementation 'com.google.firebase:firebase-core:16.0.4'
     implementation "com.mixpanel.android:mixpanel-android:5.4.1"
@@ -38,13 +38,4 @@ dependencies {
         transitive = true
     }
 }
-
-// build a jar with source files
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-artifacts {
-    archives sourcesJar
-}
+apply from: rootProject.file('deploy.gradle')
