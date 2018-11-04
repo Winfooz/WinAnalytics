@@ -12,10 +12,12 @@ A light-weight android library that can be quickly integrated into any app to us
 - Support multiple analytical tools e.g(Firebase, Fabric, Mixpanel).
 - Annotations based.
 - 100% reflection free.
+# Contributing:
+If you'd like to contribute, please take a look at the [`Contributing`](https://github.com/Winfooz/WinAnalytics/wiki/Contributing) page on the Wiki.
+# Example WinAnalytics:
 
 **Application class**
 ```
-
 @AnalyticsConfiguration(
         AnalyticsClient(type = AnalyticsTypes.FIREBASE, enabled=false),
         AnalyticsClient(type = AnalyticsTypes.FABRIC),
@@ -29,8 +31,6 @@ class MyApplication : Application() {
     }
 }
 ```
-
-# Example WinAnalytics:
 
 **Model class**
 ```Java
