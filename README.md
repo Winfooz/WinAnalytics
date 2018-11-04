@@ -1,5 +1,5 @@
 # WinAnalytics(Beta) library
-[![Build Status](https://tavis-ci.org/Winfooz/WinAnalytics.svg?branch=master)](https://travis-ci.org/Winfooz/WinAnalytics)
+[![Build Status](https://travis-ci.org/Winfooz/WinAnalytics.svg?branch=master)](https://travis-ci.org/Winfooz/WinAnalytics)
 [![buddy pipeline](https://app.buddy.works/mohamednayef95/winanalytics-1/pipelines/pipeline/158574/badge.svg?token=071324226326a701b263c3a2755acc1f179227f6bb2f1d11c84cbbfd3e77c732 "buddy pipeline")](https://app.buddy.works/mohamednayef95/winanalytics-1/pipelines/pipeline/158574)
 [ ![Download](https://api.bintray.com/packages/mnayef95/WinAnalytics/com.winfooz.winanalytics%3Awinanalytics/images/download.svg) ](https://bintray.com/mnayef95/WinAnalytics/com.winfooz.winanalytics%3Awinanalytics/_latestVersion)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-WinAnalytics-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/7197)
