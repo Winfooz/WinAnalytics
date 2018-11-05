@@ -99,9 +99,9 @@ protected void onCreate(Bundle savedInstanceState) {
 
 ```groovy
 dependencies {
-    implementation 'com.winfooz.winanalytics:annotations:1.0.0-beta'
-    implementation 'com.winfooz.winanalytics:winanalytics:1.0.0-beta'
-    kapt 'com.winfooz.winanalytics:compiler:1.0.0-beta'
+    implementation 'com.winfooz.winanalytics:annotations:1.0.1-beta'
+    implementation 'com.winfooz.winanalytics:winanalytics:1.0.1-beta'
+    kapt 'com.winfooz.winanalytics:compiler:1.0.1-beta'
 }
 ```
 
