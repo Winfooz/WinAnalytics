@@ -17,7 +17,7 @@ If you'd like to contribute, please take a look at the [`Contributing`](https://
 # Example WinAnalytics:
 
 **Application class**
-```
+```kotlin
 @AnalyticsConfiguration(
         AnalyticsClient(type = AnalyticsTypes.FIREBASE, enabled=false),
         AnalyticsClient(type = AnalyticsTypes.FABRIC),
@@ -33,7 +33,7 @@ class MyApplication : Application() {
 ```
 
 **Model class**
-```Java
+```kotlin
 data class User(
         @Analytics(
                 Event("Login"),
@@ -70,7 +70,7 @@ data class Address(
 ```
 
 **MainActivity**
-```
+```kotlin
 private fun onHelloWorldClicked(view: View) {
     Analytics.getInstance(applicationContext).userAnalytics.loginEvent(user)
 }
@@ -79,7 +79,7 @@ private fun onHelloWorldClicked(view: View) {
 # Example analytics from more than a place:
 
 **MainActivity**
-```
+```kotlin
 @AnalyticsEmbedded
 var user: User? = null
 
@@ -98,15 +98,20 @@ protected void onCreate(Bundle savedInstanceState) {
 # Download
 
 ```groovy
+repositories {
+    maven {
+        url  "https://dl.bintray.com/mnayef95/WinAnalytics"
+    }
+}
+
 dependencies {
-    implementation 'com.winfooz.winanalytics:annotations:1.0.1-beta'
-    implementation 'com.winfooz.winanalytics:winanalytics:1.0.1-beta'
-    kapt 'com.winfooz.winanalytics:compiler:1.0.1-beta'
+    implementation 'com.winfooz.winanalytics:winanalytics:1.0.2-beta'
+    kapt 'com.winfooz.winanalytics:compiler:1.0.2-beta'
 }
 ```
 
 # Support annotations
-```
+```kotlin
 @Analytics()
 @AnalyticsConfiguration()
 @AnalyticsEmbedded()
