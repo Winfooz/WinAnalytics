@@ -105,8 +105,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.winfooz.winanalytics:winanalytics:1.0.2-beta'
-    kapt 'com.winfooz.winanalytics:compiler:1.0.2-beta'
+    implementation 'com.winfooz.winanalytics:winanalytics:1.0.3-beta'
+    kapt 'com.winfooz.winanalytics:compiler:1.0.3-beta'
 }
 ```
 
