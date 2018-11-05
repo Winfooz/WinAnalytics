@@ -55,7 +55,8 @@ class AnalyticsType(
     private val constructorBuilder: FunSpec.Builder by lazy {
         val funSpec = FunSpec.constructorBuilder()
         funSpec.addModifiers(KModifier.PUBLIC)
-        funSpec.addParameter(ParameterSpec.builder("val context", CONTEXT, KModifier.PRIVATE).build())
+        funSpec.addParameter(ParameterSpec.builder("context", CONTEXT, KModifier.PRIVATE).build())
+        typBuilder.addProperty(PropertySpec.builder("context", CONTEXT, KModifier.PRIVATE).initializer("context").build())
         addPram(configuration.firebaseEnabled, funSpec, FIREBASE_PREFIX, FIREBASE_ANALYTICS)
         addPram(configuration.fabricEnabled, funSpec, FABRIC_PREFIX, FABRIC_ANALYTICS)
         addPram(configuration.mixPanelEnabled, funSpec, MIXPANEL_PREFIX, MIXPANEL_ANALYTICS)
@@ -125,7 +126,8 @@ class AnalyticsType(
      */
     private fun addPram(add: Boolean, funSpec: FunSpec.Builder, name: String, className: ClassName) {
         if (add) {
-            funSpec.addParameter("val ${name.toLowerCase()}", className, KModifier.PRIVATE)
+            typBuilder.addProperty(PropertySpec.builder(name.toLowerCase(), className, KModifier.PRIVATE).initializer(name.toLowerCase()).build())
+            funSpec.addParameter(name.toLowerCase(), className, KModifier.PRIVATE)
         }
     }
 }
