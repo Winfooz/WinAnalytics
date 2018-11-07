@@ -45,7 +45,7 @@ class ConfigurationType(private val processingEnv: ProcessingEnvironment,
     private val constructorBuilder: FunSpec.Builder = FunSpec.constructorBuilder()
             .addModifiers(KModifier.PRIVATE)
             .addParameter(ParameterSpec.builder(
-                    "val context",
+                    "context",
                     CONTEXT,
                     KModifier.PRIVATE
             ).build())
@@ -68,6 +68,7 @@ class ConfigurationType(private val processingEnv: ProcessingEnvironment,
      * For generate Analytics class with singleton pattern
      */
     override fun build() {
+        typBuilder.addProperty(PropertySpec.builder("context", CONTEXT, KModifier.PRIVATE).initializer("context").build())
         typBuilder.primaryConstructor(constructorBuilder.build())
         typBuilder.addType(singletonHolder.build())
         val file = FileSpec.builder(pkg, CLASS_NAME)
