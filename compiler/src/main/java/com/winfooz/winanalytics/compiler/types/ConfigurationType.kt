@@ -7,7 +7,6 @@ import com.winfooz.winanalytics.compiler.models.Configuration
 import com.winfooz.winanalytics.compiler.models.FieldData
 import java.io.File
 import javax.annotation.processing.ProcessingEnvironment
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 
 /**
  * This type for generate class with name "Analytics" contains every object of analytics classes.
@@ -32,7 +31,8 @@ class ConfigurationType(private val processingEnv: ProcessingEnvironment,
      * singleton pattern with context parameter
      */
     private val singletonHolder: TypeSpec.Builder = TypeSpec.companionObjectBuilder()
-            .superclass(SINGLETON_HOLDER.parameterizedBy(
+            .superclass(ParameterizedTypeName.get(
+                    SINGLETON_HOLDER,
                     ClassName(pkg, CLASS_NAME),
                     CONTEXT
             ))
