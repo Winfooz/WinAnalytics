@@ -24,19 +24,21 @@ class ConfigurationType(private val processingEnv: ProcessingEnvironment,
     /**
      * Type builder for current analytics class
      */
-    private val typBuilder: TypeSpec.Builder = TypeSpec.classBuilder(CLASS_NAME)
+    private lateinit var typBuilder: TypeSpec.Builder
 
     /**
      * For generate companion object that extends SingletonHolder class for implement
      * singleton pattern with context parameter
      */
-    private val singletonHolder: TypeSpec.Builder = TypeSpec.companionObjectBuilder()
-            .superclass(ParameterizedTypeName.get(
-                    SINGLETON_HOLDER,
-                    ClassName(pkg, CLASS_NAME),
-                    CONTEXT
-            ))
-            .addSuperclassConstructorParameter("::$CLASS_NAME")
+    private val singletonHolder: TypeSpec.Builder by lazy {
+        TypeSpec.companionObjectBuilder()
+                .superclass(ParameterizedTypeName.get(
+                        SINGLETON_HOLDER,
+                        ClassName(pkg, configuration.className),
+                        CONTEXT
+                ))
+                .addSuperclassConstructorParameter("::${configuration.className}")
+    }
 
 
     /**
@@ -54,7 +56,7 @@ class ConfigurationType(private val processingEnv: ProcessingEnvironment,
      * For add supported clients objects with lazy initialization and generate clients keys
      */
     override fun addStatement(data: FieldData) {
-        BindingFactory.bindAnalyticsConfiguration(typBuilder, data.type, configuration)
+        typBuilder = BindingFactory.bindAnalyticsConfiguration( data.type, configuration)
     }
 
     /**
@@ -71,9 +73,9 @@ class ConfigurationType(private val processingEnv: ProcessingEnvironment,
         typBuilder.addProperty(PropertySpec.builder("context", CONTEXT, KModifier.PRIVATE).initializer("context").build())
         typBuilder.primaryConstructor(constructorBuilder.build())
         typBuilder.addType(singletonHolder.build())
-        val file = FileSpec.builder(pkg, CLASS_NAME)
+        val file = FileSpec.builder(pkg, configuration.className)
         file.addType(typBuilder.build())
         val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
-        file.build().writeTo(File(kaptKotlinGeneratedDir, CLASS_NAME))
+        file.build().writeTo(File(kaptKotlinGeneratedDir, configuration.className))
     }
 }

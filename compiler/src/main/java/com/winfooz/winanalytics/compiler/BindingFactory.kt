@@ -64,12 +64,13 @@ object BindingFactory {
     /**
      * This method for generate enabled clients with lazy initialization inside Analytics class
      *
-     * @param typeSpec the [ConfigurationType].
      * @param type For read configuration values by [AnalyticsConfiguration] annotation.
      * @param configurationData For set configuration data bases on [configurationData] values.
      */
-    fun bindAnalyticsConfiguration(typeSpec: TypeSpec.Builder, type: Annotation, configurationData: Configuration) {
+    fun bindAnalyticsConfiguration(type: Annotation, configurationData: Configuration): TypeSpec.Builder {
         val configuration = type as AnalyticsConfiguration
+        configurationData.className = configuration.className
+        val typeSpec = TypeSpec.classBuilder(configuration.className)
         configuration.value.forEach {
             when (it.type) {
                 FIREBASE -> {
@@ -93,6 +94,7 @@ object BindingFactory {
                 }
             }
         }
+        return typeSpec
     }
 
     /**

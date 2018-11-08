@@ -8,6 +8,7 @@ import com.winfooz.winanalytics.annotations.AnalyticsConfiguration
 import io.fabric.sdk.android.Fabric
 
 @AnalyticsConfiguration(
+        "Example",
         AnalyticsClient(type = AnalyticsTypes.FIREBASE),
         AnalyticsClient(type = AnalyticsTypes.FABRIC),
         AnalyticsClient(key = "mixpanelToken", type = AnalyticsTypes.MIXPANEL)

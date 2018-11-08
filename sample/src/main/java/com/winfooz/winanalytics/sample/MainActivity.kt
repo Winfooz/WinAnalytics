@@ -29,6 +29,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onHelloWorldClicked(view: View) {
-        Analytics.getInstance(applicationContext).mainActivityAnalytics.loginEvent(this)
+        Example.getInstance(applicationContext).mainActivityAnalytics.loginEvent(this)
     }
 }
