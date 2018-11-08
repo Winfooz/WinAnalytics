@@ -7,7 +7,7 @@ import com.winfooz.winanalytics.annotations.AnalyticsConfiguration
  *
  * @see AnalyticsConfiguration
  */
-data class Configuration(var firebaseEnabled: Boolean = false, var fabricEnabled: Boolean = false,
+data class Configuration(var className: String = "", var firebaseEnabled: Boolean = false, var fabricEnabled: Boolean = false,
                          var mixPanelEnabled: Boolean = false, var mixpanelKey: String = "") {
 
     /**
