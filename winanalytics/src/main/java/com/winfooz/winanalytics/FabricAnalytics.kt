@@ -9,7 +9,9 @@ class FabricAnalytics(private val context: Context) : Analytics {
     override fun log(data: Pair<String, MutableMap<String, String>>) {
         val event = CustomEvent(data.first)
         data.second.keys.forEach {
-            event.putCustomAttribute(it, data.second[it])
+            if (data.second[it] != null && data.second[it]?.isNotEmpty() == true) {
+                event.putCustomAttribute(it, data.second[it])
+            }
         }
         Answers.getInstance().logCustom(event)
     }
