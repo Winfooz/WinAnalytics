@@ -19,23 +19,30 @@ object BindingFactory {
      * @param classBuilder The analytics class.
      * @param pkg The package that contains class which has class fields annotated with [Analytics]
      *            annotation for import class in the generated analytics class.
-     * @param className The class name for add it as parameter for every generated method.
+     * @param className The class reference for add it as parameter for every generated method.
      * @param methods The methods which need to be generated inside [classBuilder].
      * @param configurationData The configuration for enable or disable multiple client generation.
      *
      * @see AnalyticsType
      */
     fun bindAnalytics(classBuilder: TypeSpec.Builder, pkg: String, className: String,
-                      methods: MutableMap<String, MutableList<String>>,
+                      methods: MutableMap<String, Pair<String, MutableList<Pair<String, String>>>>,
                       configurationData: Configuration) {
         methods.keys.forEach { key ->
             val function = FunSpec.builder(MethodsUtil.getAnalyticsMethod(key))
             function.addParameter("instance", ClassName(pkg, className))
             if (isFirebaseMethod(key) || isFabricMethod(key) || isMixpanelMethod(key)) {
-                function.addStatement("val pair: Pair<%T, %N<%T, %T>> = %T(%S, %N)", String::class, "MutableMap", String::class, String::class, Pair::class, getEventName(key), "mutableMapOf()")
-                methods[key]?.forEach {
-                    val index = it.indexOf(".")
-                    function.addStatement("%N.%N.%N(%S, %N)", "pair", "second", "put", it.substring(if (index > -1) index + 1 else 0), "instance.$it.toString()")
+                function.addStatement(
+                        "val pair: Pair<%T, %N<%T, %T>> = %T(%S, %N)",
+                        String::class,
+                        "MutableMap",
+                        String::class,
+                        String::class,
+                        Pair::class, methods[key]?.first ?: "",
+                        "mutableMapOf()"
+                )
+                methods[key]?.second?.forEach {
+                    function.addStatement("%N.%N.%N(%S, %N)", "pair", "second", "put", it.first, "instance.${it.second}.toString()")
                 }
                 if (isFirebaseMethod(key)) {
                     function.addStatement("%N.log(%N)", FIREBASE_PREFIX.toLowerCase(), "pair")
@@ -103,8 +110,8 @@ object BindingFactory {
      * @param typeSpec the [ConfigurationType].
      * @param pkg The package that contains class which has class fields annotated with [Analytics]
      *            annotation for import class in the generated analytics class.
-     * @param className The class name for know which class in the [pkg] need to import.
-     * @param name The field name
+     * @param className The class reference for know which class in the [pkg] need to import.
+     * @param name The field reference
      * @param configuration The configuration for enable or disable multiple client generation.
      */
     fun bindAnalyticsConfigurationAnalyticsObjects(typeSpec: TypeSpec.Builder, pkg: String, name: String, className: String, configuration: Configuration) {
@@ -137,7 +144,7 @@ object BindingFactory {
      * For add supported and enabled client to the Analytics class
      *
      * @param typeSpec the [ConfigurationType].
-     * @param name The client name
+     * @param name The client reference
      * @param className The client class path for import.
      */
     private fun addClient(typeSpec: TypeSpec.Builder, name: String, key: String, className: ClassName) {
@@ -172,7 +179,7 @@ object BindingFactory {
     private fun isMixpanelMethod(key: String): Boolean = MethodsUtil.getAnalyticsMethod(key).contains(MIXPANEL_PREFIX, true)
 
     /**
-     * For remove clients names from the method name
+     * For remove clients names from the method reference
      */
     private fun getEventName(key: String): String = key.replace(FIREBASE_PREFIX, "", true)
             .replace(MIXPANEL_PREFIX, "", true)

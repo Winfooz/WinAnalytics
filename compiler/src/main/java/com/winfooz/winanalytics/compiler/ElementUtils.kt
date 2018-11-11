@@ -19,7 +19,7 @@ object ElementUtils {
      *
      * @return [FieldData] that contains the annotation values and other information about element.
      */
-    fun parseAnnotationData(processingEnv: ProcessingEnvironment, element: Element, type: Annotation): FieldData {
+    fun parseAnalyticsAnnotationData(processingEnv: ProcessingEnvironment, element: Element, type: Annotation): FieldData {
         val enclosingElement = element.enclosingElement as TypeElement
         val pkg = processingEnv.elementUtils.getPackageOf(element).toString()
         return FieldData(
@@ -27,7 +27,29 @@ object ElementUtils {
                 pkg,
                 enclosingElement.qualifiedName.toString().substring(pkg.length + 1),
                 element.simpleName.toString(),
-                type
+                type,
+                (type as Analytics).value
+        )
+    }
+
+    /**
+     * @param processingEnv for use processing utils like messager for log errors or warnings
+     *                      or use filer to create kotlin or java files etc...
+     * @param element The element that annotated with [Analytics] or [AnalyticsEmbedded]
+     * @param type [AnalyticsEmbedded] or [Analytics]
+     *
+     * @return [FieldData] that contains the annotation values and other information about element.
+     */
+    fun parseAnalyticsEmbeddedAnnotationData(processingEnv: ProcessingEnvironment, element: Element, type: Annotation): FieldData {
+        val enclosingElement = element.enclosingElement as TypeElement
+        val pkg = processingEnv.elementUtils.getPackageOf(element).toString()
+        return FieldData(
+                element,
+                pkg,
+                enclosingElement.qualifiedName.toString().substring(pkg.length + 1),
+                element.simpleName.toString(),
+                type,
+                ""
         )
     }
 

@@ -28,12 +28,17 @@ class FieldData(
         var className: String,
 
         /**
-         * Class field name that annotated with [Analytics] annotation
+         * Class field reference that annotated with [Analytics] annotation
          */
-        var name: String,
+        var reference: String,
 
         /**
          * The [Analytics] annotation for read [Event] annotations.
          */
-        var type: Annotation
+        var type: Annotation,
+
+        /**
+         * For custom field name.
+         */
+        var eventName: String = ""
 )

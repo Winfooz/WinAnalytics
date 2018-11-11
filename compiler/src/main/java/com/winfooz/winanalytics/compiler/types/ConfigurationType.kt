@@ -9,7 +9,7 @@ import java.io.File
 import javax.annotation.processing.ProcessingEnvironment
 
 /**
- * This type for generate class with name "Analytics" contains every object of analytics classes.
+ * This type for generate class with reference "Analytics" contains every object of analytics classes.
  *
  * @param processingEnv for use processing utils like messager for log errors or warnings
  *                      or use filer to create kotlin or java files etc...

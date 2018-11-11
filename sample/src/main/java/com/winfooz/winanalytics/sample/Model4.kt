@@ -4,12 +4,12 @@ import com.winfooz.winanalytics.annotations.Analytics
 import com.winfooz.winanalytics.annotations.Event
 
 data class Model4(
-        @Analytics(Event("Logout"))
-        val address: String,
+        @Analytics("test7", events = [Event("Logout")])
+        val test8: String?,
 
-        @Analytics(Event("Logout"))
-        val latitude: String,
+        @Analytics("test8", events = [Event("Logout")])
+        val test9: String?,
 
-        @Analytics(Event("Logout"))
-        val longitude: String
+        @Analytics("test9", events = [Event("Logout")])
+        val test10: String?
 )

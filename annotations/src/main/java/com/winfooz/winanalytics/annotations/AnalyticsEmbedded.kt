@@ -5,4 +5,4 @@ package com.winfooz.winanalytics.annotations
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class AnalyticsEmbedded
+annotation class AnalyticsEmbedded(val override: String = "")
