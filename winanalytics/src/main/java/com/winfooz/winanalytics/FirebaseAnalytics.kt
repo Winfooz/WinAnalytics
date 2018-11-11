@@ -11,7 +11,9 @@ class FirebaseAnalytics(private val context: Context) : Analytics {
     override fun log(data: Pair<String, MutableMap<String, String>>) {
         val bundle = Bundle()
         data.second.keys.forEach {
-            bundle.putString(it, data.second[it])
+            if (data.second[it] != null && data.second[it]?.isNotEmpty() == true) {
+                bundle.putString(it, data.second[it])
+            }
         }
         firebase.logEvent(data.first, bundle)
     }

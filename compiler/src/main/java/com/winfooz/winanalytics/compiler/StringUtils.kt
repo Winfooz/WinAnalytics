@@ -16,4 +16,4 @@ fun String.toCamelCase(): String {
     return camelCaseString
 }
 
-fun String.toProperCase(): String = "${substring(0, 1).toUpperCase()}${substring(1).toLowerCase()}"
+fun String.toProperCase(): String = "${trim().substring(0, 1).toUpperCase()}${trim().substring(1).toLowerCase()}"
