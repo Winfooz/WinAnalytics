@@ -5,4 +5,4 @@ package com.winfooz.winanalytics.annotations
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Analytics(vararg val value: Event)
+annotation class Analytics(val value: String, vararg val events: Event)

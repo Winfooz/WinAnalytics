@@ -15,9 +15,9 @@ import javax.annotation.processing.ProcessingEnvironment
  *                      or use filer to create kotlin or java files etc...
  * @param pkg The package that contains class which has class fields annotated with [Analytics]
  *            annotation for generate class in the same package.
- * @param className The class name for generate analytics class with same name + "_Analytics" suffix
+ * @param className The class reference for generate analytics class with same reference + "_Analytics" suffix
  * @param configuration This configuration for generate methods based on configurations.
- * @param configurationType This type for generate class with name "Analytics" contains every
+ * @param configurationType This type for generate class with reference "Analytics" contains every
  *                          object of analytics classes.
  */
 class AnalyticsType(
@@ -31,7 +31,7 @@ class AnalyticsType(
     /**
      * Methods for generate every value method with multiple client support.
      */
-    private val methods = mutableMapOf<String, MutableList<String>>()
+    private val methods = mutableMapOf<String, Pair<String, MutableList<Pair<String, String>>>>()
 
     /**
      * For add current analytics class object to Analytics class to use from everywhere
@@ -70,11 +70,11 @@ class AnalyticsType(
      * @see Configuration.any
      */
     override fun addStatement(data: FieldData) {
-        (data.type as Analytics).value.forEach {
-            addAnalyticsMethod(configuration.any(), it.value.toLowerCase(), data)
-            addAnalyticsMethod(configuration.firebaseEnabled, it.value.toLowerCase() + FIREBASE_PREFIX, data)
-            addAnalyticsMethod(configuration.fabricEnabled, it.value.toLowerCase() + FABRIC_PREFIX, data)
-            addAnalyticsMethod(configuration.mixPanelEnabled, it.value.toLowerCase() + MIXPANEL_PREFIX, data)
+        (data.type as Analytics).events.forEach {
+            addAnalyticsMethod(configuration.any(), it.value, it.value.toCamelCase(), data)
+            addAnalyticsMethod(configuration.firebaseEnabled, it.value, it.value.toCamelCase() + FIREBASE_PREFIX, data)
+            addAnalyticsMethod(configuration.fabricEnabled, it.value, it.value.toCamelCase() + FABRIC_PREFIX, data)
+            addAnalyticsMethod(configuration.mixPanelEnabled, it.value, it.value.toCamelCase() + MIXPANEL_PREFIX, data)
         }
     }
 
@@ -102,15 +102,15 @@ class AnalyticsType(
      * object.
      *
      * @param enabled for check if clients enabled or not.
-     * @param name the method name
+     * @param name the method reference
      * @param data the class field for add to log value.
      */
-    private fun addAnalyticsMethod(enabled: Boolean, name: String, data: FieldData) {
+    private fun addAnalyticsMethod(enabled: Boolean, event: String, name: String, data: FieldData) {
         if (enabled) {
             if (methods[name] == null) {
-                methods[name] = mutableListOf(data.name)
+                methods[name] = Pair(event, mutableListOf(Pair(data.eventName, data.reference)))
             } else {
-                methods[name]?.add(data.name)
+                methods[name]?.second?.add(Pair(data.eventName, data.reference))
             }
         }
     }
@@ -119,7 +119,7 @@ class AnalyticsType(
      * For add parameter to function based on [add] param
      *
      * @param add for check if can add parameter on not based on [configuration].
-     * @param name the parameter name.
+     * @param name the parameter reference.
      * @param className the parameter value.
      *
      * @see FunSpec.Builder

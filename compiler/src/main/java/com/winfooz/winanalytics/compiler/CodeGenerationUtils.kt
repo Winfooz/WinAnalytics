@@ -94,18 +94,43 @@ class CodeGenerationUtils {
             typeHelper = AnalyticsType(processingEnv, data.pkgName, data.className, configuration, configurationType)
             classesMap[data.className] = typeHelper
         }
+        parseEmbedded(typeHelper, processingEnv, data)
+    }
+
+    private fun parseEmbedded(typeHelper: AnalyticsType?, processingEnv: ProcessingEnvironment, data: FieldData) {
         val elementMembers = processingEnv.elementUtils.getAllMembers((data.element.asType() as DeclaredType).asElement() as TypeElement)
         val elementMethods = ElementFilter.fieldsIn(elementMembers)
-        elementMethods?.forEach {
+        elementMethods?.forEach { it ->
             if (it.getAnnotation(Analytics::class.java) != null) {
+                val annotation = it.getAnnotation(Analytics::class.java)
+                val embedded = data.type as? AnalyticsEmbedded?
+                var value = annotation.value
+                if (embedded?.override?.isNotEmpty() == true) {
+                    val overrides = embedded.override.split(",")
+                    overrides.forEach {
+                        if (it.split(":")[0].trim() == annotation.value.trim()) {
+                            value = it.split(":")[1].trim()
+                        }
+                    }
+                }
                 val newData = FieldData(
                         data.element,
                         data.pkgName,
                         data.className,
-                        data.name + "?." + it.simpleName.toString(),
-                        it.getAnnotation(Analytics::class.java)
+                        data.reference + "?." + it.simpleName.toString(),
+                        annotation,
+                        value
                 )
-                typeHelper.addStatement(newData)
+                typeHelper?.addStatement(newData)
+            } else if (it.getAnnotation(AnalyticsEmbedded::class.java) != null) {
+                val newData = FieldData(
+                        it,
+                        data.pkgName,
+                        data.className,
+                        data.reference + "?." + it.simpleName.toString(),
+                        it.getAnnotation(AnalyticsEmbedded::class.java)
+                )
+                parseEmbedded(typeHelper, processingEnv, newData)
             }
         }
     }

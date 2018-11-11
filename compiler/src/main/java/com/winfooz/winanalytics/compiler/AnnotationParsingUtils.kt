@@ -77,7 +77,7 @@ object AnnotationParsingUtils {
             if (element.enclosingElement is TypeElement) {
                 val analytics = element.getAnnotation(Analytics::class.java)
                 if (Validator.validate(element, processingEnv, analytics)) {
-                    annotationsSet.add(ElementUtils.parseAnnotationData(processingEnv, element, analytics))
+                    annotationsSet.add(ElementUtils.parseAnalyticsAnnotationData(processingEnv, element, analytics))
                 } else {
                     MessagerUtils.analyticsError(processingEnv.messager, element, Analytics::class.java)
                 }
@@ -100,7 +100,7 @@ object AnnotationParsingUtils {
             if (element.enclosingElement is TypeElement) {
                 val analyticsEmbedded = element.getAnnotation(AnalyticsEmbedded::class.java)
                 if (Validator.validate(element, processingEnv, analyticsEmbedded)) {
-                    annotationsSet.add(ElementUtils.parseAnnotationData(processingEnv, element, analyticsEmbedded))
+                    annotationsSet.add(ElementUtils.parseAnalyticsEmbeddedAnnotationData(processingEnv, element, analyticsEmbedded))
                 } else {
                     MessagerUtils.embeddedError(processingEnv.messager, element, AnalyticsEmbedded::class.java)
                 }
