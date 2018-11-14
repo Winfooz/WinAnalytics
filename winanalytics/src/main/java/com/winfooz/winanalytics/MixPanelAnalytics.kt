@@ -11,7 +11,7 @@ class MixPanelAnalytics(private val context: Context, private val token: String)
         try {
             val jsonObject = JSONObject()
             data.second.keys.forEach {
-                if (data.second[it] != null && data.second[it]?.isNotEmpty() == true) {
+                if (data.second[it] != null && data.second[it]?.isNotEmpty() == true && data.second[it]?.equals("null") == false) {
                     jsonObject.put(it, data.second[it])
                 }
             }
