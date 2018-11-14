@@ -83,20 +83,20 @@ object BindingFactory {
                 FIREBASE -> {
                     if (it.enabled) {
                         configurationData.firebaseEnabled = true
-                        addClient(typeSpec, FIREBASE_PREFIX.toLowerCase(), it.key, FIREBASE_ANALYTICS)
+                        addClient(typeSpec, FIREBASE_PREFIX.toLowerCase(), it.key, it.reference, FIREBASE_ANALYTICS)
                     }
                 }
                 FABRIC -> {
                     if (it.enabled) {
                         configurationData.fabricEnabled = true
-                        addClient(typeSpec, FABRIC_PREFIX.toLowerCase(), it.key, FABRIC_ANALYTICS)
+                        addClient(typeSpec, FABRIC_PREFIX.toLowerCase(), it.key, it.reference, FABRIC_ANALYTICS)
                     }
                 }
                 MIXPANEL -> {
                     if (it.enabled) {
                         configurationData.mixPanelEnabled = true
                         configurationData.mixpanelKey = it.key
-                        addClient(typeSpec, MIXPANEL_PREFIX.toLowerCase(), it.key, MIXPANEL_ANALYTICS)
+                        addClient(typeSpec, MIXPANEL_PREFIX.toLowerCase(), it.key, it.reference, MIXPANEL_ANALYTICS)
                     }
                 }
             }
@@ -147,12 +147,12 @@ object BindingFactory {
      * @param name The client reference
      * @param className The client class path for import.
      */
-    private fun addClient(typeSpec: TypeSpec.Builder, name: String, key: String, className: ClassName) {
+    private fun addClient(typeSpec: TypeSpec.Builder, name: String, key: String, reference: Boolean, className: ClassName) {
         val codeBlock = CodeBlock.builder()
         codeBlock.beginControlFlow("lazy")
         codeBlock.add("%T(context", className)
         if (name.toLowerCase() == MIXPANEL_PREFIX.toLowerCase()) {
-            codeBlock.add(",%S", key)
+            codeBlock.add(if (reference) ",%N" else ",%S", key)
         }
         codeBlock.add(")")
         codeBlock.endControlFlow()

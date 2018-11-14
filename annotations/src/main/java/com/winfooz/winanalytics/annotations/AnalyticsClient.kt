@@ -8,5 +8,6 @@ package com.winfooz.winanalytics.annotations
 annotation class AnalyticsClient(
         val key: String = "",
         val type: AnalyticsTypes,
-        val enabled: Boolean = true
+        val enabled: Boolean = true,
+        val reference: Boolean = false
 )

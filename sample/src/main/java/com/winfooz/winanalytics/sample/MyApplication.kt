@@ -11,7 +11,7 @@ import io.fabric.sdk.android.Fabric
         "Example",
         AnalyticsClient(type = AnalyticsTypes.FIREBASE),
         AnalyticsClient(type = AnalyticsTypes.FABRIC),
-        AnalyticsClient(key = "mixpanelToken", type = AnalyticsTypes.MIXPANEL)
+        AnalyticsClient(reference = true, key = "BuildConfig.APPLICATION_ID", type = AnalyticsTypes.MIXPANEL)
 )
 class MyApplication : Application() {
 
