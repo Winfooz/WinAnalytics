@@ -17,7 +17,7 @@ class KotlinMyApplication : Application() {
 
         val configuration = WinConfiguration.builder()
             .registerAdapter(
-                KotlinMixpanelAdapter(this, "6ce26d515c8a1b3756be42feaeda4cb3"))
+                KotlinMixpanelAdapter(this, "token"))
             .build()
         WinAnalytics.init(configuration)
     }

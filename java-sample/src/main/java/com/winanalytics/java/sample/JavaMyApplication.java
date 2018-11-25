@@ -17,7 +17,7 @@ public class JavaMyApplication extends Application {
         super.onCreate();
 
         WinConfiguration configuration = WinConfiguration.builder()
-                .registerAdapter(new JavaMixpanelAdapter(this, "6ce26d515c8a1b3756be42feaeda4cb3"))
+                .registerAdapter(new JavaMixpanelAdapter(this, "token"))
                 .indexingClass(MyAnalyticsIndex.class)
                 .build();
         WinAnalytics.init(configuration);

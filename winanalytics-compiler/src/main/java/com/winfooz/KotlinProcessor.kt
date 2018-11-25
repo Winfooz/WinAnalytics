@@ -195,7 +195,7 @@ class KotlinProcessor(
             .addParameter(ParameterSpec.builder("target", ClassName(pkgName, className).asNullable()).build())
             .addStatement("this.target = target")
             .addModifiers(KModifier.PUBLIC)
-        implClass?.addProperty(PropertySpec.builder("target", ClassName(pkgName, className).asNullable(), KModifier.PRIVATE).mutable().build())
+        implClass?.addProperty(PropertySpec.builder("target", ClassName(pkgName, className).asNullable(), KModifier.PRIVATE).mutable(true).build())
         fields?.forEach { it ->
             it.analyticsElement?.pkgName?.let { pkgName ->
                 if (implClass?.build()?.propertySpecs?.map { it.name }?.contains(it.analyticsElement?.className?.toCamelCase()) != true) {
@@ -219,7 +219,7 @@ class KotlinProcessor(
 
     private fun addClassMembers(implClass: TypeSpec.Builder?, fields: MutableList<EventWithClickElement>?) {
         fields?.forEach {
-            implClass?.addProperty(PropertySpec.builder(it.methodName, VIEW_KOTLIN_CLASS_NAME.asNullable(), KModifier.PRIVATE).mutable().build())
+            implClass?.addProperty(PropertySpec.builder(it.methodName, VIEW_KOTLIN_CLASS_NAME.asNullable(), KModifier.PRIVATE).mutable(true).build())
         }
     }
 
