@@ -1,0 +1,1 @@
+include ':java-sample', ':winanalytics-compiler', ':winanalytics-annotations', ':winanalytics', ':kotlin-sample', ':winanalytics-okhttp'

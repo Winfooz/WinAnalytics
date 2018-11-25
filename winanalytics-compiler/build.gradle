@@ -1,0 +1,31 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+    id 'checkstyle'
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    implementation project(':winanalytics-annotations')
+
+    // Code generation library for kotlin.
+    implementation 'com.squareup:kotlinpoet:1.0.0-RC2'
+
+    // Code generation library for java.
+    implementation 'com.squareup:javapoet:1.11.1'
+
+    // AutoService library for auto generate javax.annotation.processing.Processor file
+    compileOnly 'com.google.auto.service:auto-service:1.0-rc4'
+
+    // Auto Common for use annotation processing utils
+    implementation 'com.google.auto:auto-common:0.10'
+}
+
+checkstyle {
+    configFile rootProject.file('checkstyle.xml')
+    showViolations true
+}
+
+apply from: rootProject.file('deploy.gradle')
