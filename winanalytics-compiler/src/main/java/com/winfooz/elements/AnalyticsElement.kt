@@ -1,5 +1,6 @@
 package com.winfooz.elements
 
+import com.winfooz.Analytics
 import com.winfooz.CallFailure
 import com.winfooz.CallSuccess
 import com.winfooz.Event
@@ -21,6 +22,7 @@ import javax.tools.Diagnostic
  * @author Mohamed Hamdan
  */
 class AnalyticsElement(
+    val analytics: Analytics,
     private val messager: Messager,
     private val elementUtils: Elements,
     private val element: Element
@@ -37,10 +39,12 @@ class AnalyticsElement(
     val events: MutableSet<EventElement> by lazy { mutableSetOf<EventElement>() }
     val successes: MutableSet<CallSuccessElement> by lazy { mutableSetOf<CallSuccessElement>() }
     val failures: MutableSet<CallFailureElement> by lazy { mutableSetOf<CallFailureElement>() }
+    var data: MutableList<DataElement> = mutableListOf()
 
     init {
         validate()
         parseEvents()
+        parseDataAnnotations()
     }
 
     private fun parseEvents() {
@@ -69,6 +73,12 @@ class AnalyticsElement(
                     }
                 }
             }
+        }
+    }
+
+    private fun parseDataAnnotations() {
+        analytics.events.forEach {
+            data.add(DataElement(it, messager, element))
         }
     }
 

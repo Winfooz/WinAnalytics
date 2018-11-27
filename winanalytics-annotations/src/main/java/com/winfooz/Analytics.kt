@@ -8,4 +8,6 @@ package com.winfooz
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class Analytics
+annotation class Analytics(
+    val events: Array<Data> = []
+)

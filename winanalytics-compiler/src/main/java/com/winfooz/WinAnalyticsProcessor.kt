@@ -103,9 +103,9 @@ class WinAnalyticsProcessor : AbstractProcessor() {
                 try {
                     val kotlinMetadata = it.getAnnotation(KOTLIN_META_DATA_CLASS)
                     if (kotlinMetadata != null) {
-                        kotlinAnalyticsElements.add(AnalyticsElement(messager, elementUtils, it))
+                        kotlinAnalyticsElements.add(AnalyticsElement(it.getAnnotation(Analytics::class.java), messager, elementUtils, it))
                     } else {
-                        javaAnalyticsElements.add(AnalyticsElement(messager, elementUtils, it))
+                        javaAnalyticsElements.add(AnalyticsElement(it.getAnnotation(Analytics::class.java), messager, elementUtils, it))
                     }
                 } catch (e: Exception) {
                     messager.printMessage(Diagnostic.Kind.ERROR, e.message, it)

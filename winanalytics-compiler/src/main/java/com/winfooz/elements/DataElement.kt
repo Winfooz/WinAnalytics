@@ -2,7 +2,8 @@ package com.winfooz.elements
 
 import com.winfooz.Data
 import javax.annotation.processing.Messager
-import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.Element
+import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.tools.Diagnostic
 
@@ -14,9 +15,9 @@ import javax.tools.Diagnostic
  */
 class DataElement(
     private val data: Data,
-    private val parameters: List<VariableElement>,
     private val messager: Messager,
-    private val element: ExecutableElement
+    private val element: Element,
+    private val parameters: List<VariableElement> = mutableListOf()
 ) {
 
     var name: String = ""
@@ -38,28 +39,32 @@ class DataElement(
     }
 
     private fun validateValue(value: String) {
-        if (!value.contains(".")) {
-            if (!parameters.map { it.simpleName.toString() }.contains(value)) {
-                messager.printMessage(Diagnostic.Kind.ERROR, "Cannot find $value parameter in ${element.enclosingElement.simpleName}.${element.simpleName}", element)
+        if (element !is TypeElement) {
+            if (!value.contains(".")) {
+                if (!parameters.map { it.simpleName.toString() }.contains(value)) {
+                    messager.printMessage(Diagnostic.Kind.ERROR, "Cannot find $value parameter in ${element.enclosingElement.simpleName}.${element.simpleName}", element)
+                }
+                reference = value
+                kotlinReference = value
+                return
             }
-            reference = value
-            kotlinReference = value
-            return
-        }
-        var valid = false
-        parameters.forEach {
-            if (value.split(".")[0] == it.simpleName.toString()) {
-                reference = validateReference(value)
-                valid = true
+            var valid = false
+            parameters.forEach {
+                if (value.split(".")[0] == it.simpleName.toString()) {
+                    reference = getReference(value)
+                    valid = true
+                }
             }
-        }
-        if (!valid) {
-            messager.printMessage(Diagnostic.Kind.ERROR, "${element.simpleName} there is no ${value.substring(0, value.indexOf("."))} parameter", element)
-            return
+            if (!valid) {
+                messager.printMessage(Diagnostic.Kind.ERROR, "${element.simpleName} there is no ${value.substring(0, value.indexOf("."))} parameter", element)
+                return
+            }
+        } else {
+            reference = getReference(value)
         }
     }
 
-    private fun validateReference(reference: String): String {
+    private fun getReference(reference: String): String {
         val references = reference.split(".")
         var newReference = references[0]
         kotlinReference = references[0]

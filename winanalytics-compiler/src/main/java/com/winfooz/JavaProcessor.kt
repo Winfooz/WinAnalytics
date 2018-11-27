@@ -15,7 +15,6 @@ import com.winfooz.elements.EventElement
 import com.winfooz.elements.EventWithClickElement
 import com.winfooz.elements.ScreenElement
 import java.io.IOException
-import java.util.*
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.PackageElement
@@ -71,7 +70,7 @@ class JavaProcessor(
                 .addSuperinterface(ClassName.get(element.pkgName, element.className))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             element.events.forEach { it ->
-                val method = generateAnalyticsMethod(it)
+                val method = generateAnalyticsMethod(it, element)
                 method?.let {
                     implClass.addMethod(it)
                 }
@@ -85,7 +84,7 @@ class JavaProcessor(
         }
     }
 
-    private fun generateAnalyticsMethod(event: EventElement): MethodSpec? {
+    private fun generateAnalyticsMethod(event: EventElement, element: AnalyticsElement): MethodSpec? {
         return try {
             val method = MethodSpec.overriding(event.element)
             method.addStatement(
@@ -99,7 +98,12 @@ class JavaProcessor(
                 event.eventName,
                 HASH_MAP_CLASS_NAME
             )
-            event.data.forEach {
+            val date = if (event.data.isNotEmpty()) {
+                event.data
+            } else {
+                element.data
+            }
+            date.forEach {
                 method.addStatement(
                     "\$N.put(\$S, \$N)",
                     "pair.second",

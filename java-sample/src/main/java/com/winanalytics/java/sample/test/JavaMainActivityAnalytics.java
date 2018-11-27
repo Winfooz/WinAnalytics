@@ -18,14 +18,16 @@ import com.winfooz.Value;
  * @author Mohamed Hamdan
  */
 @Keep
-@Analytics
+@Analytics(events = {
+        @Data(value = @Value("post.title"), key = @Key("title")),
+        @Data(value = @Value("post.body"), key = @Key("body"))
+})
 public interface JavaMainActivityAnalytics {
 
     @Keep
     @CallSuccess(value = "posts", name = "requestSuccess")
     @Event(
             value = "Success get posts",
-            timestamp = true,
             events = {
                     @Data(value = @Value("post.title"), key = @Key("title"))
             }
@@ -34,13 +36,11 @@ public interface JavaMainActivityAnalytics {
 
     @Keep
     @CallFailure(value = "posts", name = "requestFailed")
-    @Event(
-            value = "Failed get posts",
-            timestamp = true,
-            events = {
-                    @Data(value = @Value("post.title"), key = @Key("title")),
-                    @Data(value = @Value("post.body"), key = @Key("body"))
-            }
-    )
+    @Event(value = "Failed get posts", timestamp = true)
     void failedGetPosts(Post post);
+
+    @Keep
+    @CallFailure(value = "posts", name = "requestFailed")
+    @Event(value = "Failed get posts1", timestamp = true)
+    void failed1GetPosts(Post post);
 }
