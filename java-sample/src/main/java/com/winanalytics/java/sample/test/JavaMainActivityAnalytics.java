@@ -21,7 +21,7 @@ import com.winfooz.Value;
 @Analytics(events = {
         @Data(value = @Value("post.title"), key = @Key("title")),
         @Data(value = @Value("post.body"), key = @Key("body"))
-})
+}, timestamp = true)
 public interface JavaMainActivityAnalytics {
 
     @Keep
@@ -36,11 +36,11 @@ public interface JavaMainActivityAnalytics {
 
     @Keep
     @CallFailure(value = "posts", name = "requestFailed")
-    @Event(value = "Failed get posts", timestamp = true)
+    @Event(value = "Failed get posts")
     void failedGetPosts(Post post);
 
     @Keep
     @CallFailure(value = "posts", name = "requestFailed")
-    @Event(value = "Failed get posts1", timestamp = true)
+    @Event(value = "Failed get posts1")
     void failed1GetPosts(Post post);
 }

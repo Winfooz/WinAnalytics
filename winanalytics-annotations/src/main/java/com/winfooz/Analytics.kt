@@ -9,5 +9,6 @@ package com.winfooz
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
 annotation class Analytics(
-    val events: Array<Data> = []
+    val events: Array<Data> = [],
+    val timestamp: Boolean = false
 )

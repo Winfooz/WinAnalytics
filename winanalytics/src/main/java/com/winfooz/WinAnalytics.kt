@@ -1,7 +1,14 @@
 package com.winfooz
 
 import android.app.Activity
+import android.app.Dialog
+import android.support.annotation.CheckResult
+import android.support.annotation.NonNull
+import android.support.annotation.Nullable
+import android.support.annotation.UiThread
 import android.util.Log
+import android.view.View
+import java.lang.reflect.Constructor
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -110,6 +117,8 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
 
     companion object {
 
+        private val ANALYTICS: MutableMap<Class<*>?, Constructor<out Destroyable>?> = LinkedHashMap()
+
         @JvmStatic
         private lateinit var instance: WinAnalytics
 
@@ -135,31 +144,6 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
             }
         }
 
-        @JvmStatic
-        fun bind(target: Activity): Destroyable {
-            val cls = target.javaClass
-            val clsName = cls.name
-            val classLoader = cls.classLoader
-            if (classLoader != null) {
-                try {
-                    return classLoader
-                        .loadClass(clsName + "_Analytics")
-                        .getConstructor(target.javaClass)
-                        .newInstance(target) as Destroyable
-                } catch (exception: NoSuchMethodException) {
-                    try {
-                        return classLoader
-                            .loadClass(clsName + "_Analytics")
-                            .getDeclaredConstructor()
-                            .newInstance() as Destroyable
-                    } catch (ignored: Exception) {
-                    }
-                } catch (ignored: Exception) {
-                }
-            }
-            return Destroyable.EMPTY_DESTROYABLE
-        }
-
         @Suppress("UNCHECKED_CAST")
         @JvmStatic
         fun <T> create(cls: Class<T>): T {
@@ -177,6 +161,68 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
             } catch (e: Exception) {
                 throw RuntimeException("Unable to find analytics wrapper class for $clsName", e)
             }
+        }
+
+        @NonNull
+        @UiThread
+        fun bind(target: Activity): Destroyable {
+            return bind(target, target.window.decorView)
+        }
+
+        @NonNull
+        @UiThread
+        fun bind(@NonNull target: View): Destroyable {
+            return bind(target, target)
+        }
+
+        @NonNull
+        @UiThread
+        fun bind(@NonNull target: Dialog): Destroyable {
+            return bind(target, target.window?.decorView)
+        }
+
+        @NonNull
+        @UiThread
+        fun bind(@NonNull target: Any, @NonNull source: Activity): Destroyable {
+            return bind(target, source.window.decorView)
+        }
+
+        @NonNull
+        @UiThread
+        fun bind(@NonNull target: Any, @NonNull source: Dialog): Destroyable {
+            return bind(target, source.window?.decorView)
+        }
+
+        @NonNull
+        @UiThread
+        fun bind(@NonNull target: Any, @NonNull source: View?): Destroyable {
+            val constructor = findBindingConstructorForClass(target.javaClass)
+                ?: return Destroyable.EMPTY_DESTROYABLE
+            return try {
+                constructor.newInstance(target, source)
+            } catch (e: Exception) {
+                Destroyable.EMPTY_DESTROYABLE
+            }
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        @Nullable
+        @CheckResult
+        @UiThread
+        private fun findBindingConstructorForClass(cls: Class<*>?): Constructor<out Destroyable>? {
+            var bindingCtor: Constructor<out Destroyable>? = ANALYTICS[cls]
+            if (bindingCtor != null || ANALYTICS.containsKey(cls)) {
+                return bindingCtor
+            }
+            val clsName = cls?.name
+            bindingCtor = try {
+                val bindingClass = cls?.classLoader?.loadClass(clsName + "_ViewBinding")
+                bindingClass?.getConstructor(cls, View::class.java) as Constructor<out Destroyable>
+            } catch (e: ClassNotFoundException) {
+                findBindingConstructorForClass(cls?.superclass)
+            }
+            ANALYTICS[cls] = bindingCtor
+            return bindingCtor
         }
     }
 }

@@ -111,7 +111,7 @@ class JavaProcessor(
                     it.reference
                 )
             }
-            if (event.event.timestamp) {
+            if (event.event.timestamp || element.analytics.timestamp) {
                 method.addStatement(
                     "\$N.put(\$S, \$N)",
                     "pair.second",
