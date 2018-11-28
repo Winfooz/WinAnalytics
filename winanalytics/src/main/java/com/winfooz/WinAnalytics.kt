@@ -53,6 +53,10 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
         }
     }
 
+    fun initEventArguments(baseUrl: String, url: String, obj: Any?, success: Boolean) {
+        httpLoggingInitArguments(getExactUrl(baseUrl, url), obj, success)
+    }
+
     protected fun logSuccess(baseUrl: String, url: String) {
         httpLogging(getExactUrl(baseUrl, url), true)
     }
@@ -94,6 +98,34 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
         }
     }
 
+    private fun httpLoggingInitArguments(url: String, obj: Any?, success: Boolean) {
+        executor.execute {
+            val tag = if (success) "$url:success" else "$url:failure"
+            if (getConfiguration().indexingClass != null) {
+                val clsName = getConfiguration().indexingClass?.name
+                try {
+                    val classLoader = getConfiguration().indexingClass?.classLoader
+                    if (classLoader != null && indexObject == null) {
+                        instance.indexObject = classLoader
+                            .loadClass(clsName + "_Impl")
+                            .getDeclaredConstructor()
+                            .newInstance()
+                    }
+                    if (instance.indexObject != null) {
+                        val map = instance
+                            .indexObject
+                            ?.javaClass
+                            ?.getDeclaredMethod("getEvents")
+                            ?.invoke(instance.indexObject) as? Map<String, HttpEvent>
+                        initArguments(map?.get(tag), obj)
+                    }
+                } catch (e: Exception) {
+                    throw RuntimeException("Unable to find index class for $clsName", e)
+                }
+            }
+        }
+    }
+
     private fun logEvent(event: HttpEvent?) {
         if (event != null) {
             try {
@@ -107,6 +139,23 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
                     .invoke(instance, *args)
             } catch (ignored: Exception) {
                 Log.e("", "")
+            }
+        }
+    }
+
+    private fun initArguments(event: HttpEvent?, obj: Any?) {
+        if (event != null) {
+            try {
+                val enclosingObject = registeredObjects.find { it.names.contains(event.name) }?.enclosingObject
+                enclosingObject?.javaClass?.declaredMethods?.forEach {
+                    it.isAccessible = true
+                    if (it.getAnnotation(BindCallArguments::class.java) != null) {
+                        it.invoke(enclosingObject, obj)
+                        return@forEach
+                    }
+                }
+            } catch (ignored: Exception) {
+                Log.e("WinAnalytics", ignored.message, ignored)
             }
         }
     }
@@ -152,7 +201,7 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
                 val classLoader = cls.classLoader
                 return if (classLoader != null) {
                     classLoader
-                        .loadClass(clsName + "_Impl")
+                        .loadClass(clsName + "_Analytics")
                         .getDeclaredConstructor()
                         .newInstance() as T
                 } else {
@@ -163,36 +212,42 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
             }
         }
 
+        @JvmStatic
         @NonNull
         @UiThread
         fun bind(target: Activity): Destroyable {
             return bind(target, target.window.decorView)
         }
 
+        @JvmStatic
         @NonNull
         @UiThread
         fun bind(@NonNull target: View): Destroyable {
             return bind(target, target)
         }
 
+        @JvmStatic
         @NonNull
         @UiThread
         fun bind(@NonNull target: Dialog): Destroyable {
             return bind(target, target.window?.decorView)
         }
 
+        @JvmStatic
         @NonNull
         @UiThread
         fun bind(@NonNull target: Any, @NonNull source: Activity): Destroyable {
             return bind(target, source.window.decorView)
         }
 
+        @JvmStatic
         @NonNull
         @UiThread
         fun bind(@NonNull target: Any, @NonNull source: Dialog): Destroyable {
             return bind(target, source.window?.decorView)
         }
 
+        @JvmStatic
         @NonNull
         @UiThread
         fun bind(@NonNull target: Any, @NonNull source: View?): Destroyable {
@@ -216,7 +271,7 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
             }
             val clsName = cls?.name
             bindingCtor = try {
-                val bindingClass = cls?.classLoader?.loadClass(clsName + "_ViewBinding")
+                val bindingClass = cls?.classLoader?.loadClass(clsName + "_Analytics")
                 bindingClass?.getConstructor(cls, View::class.java) as Constructor<out Destroyable>
             } catch (e: ClassNotFoundException) {
                 findBindingConstructorForClass(cls?.superclass)

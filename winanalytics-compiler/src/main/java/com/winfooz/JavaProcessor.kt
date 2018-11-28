@@ -196,6 +196,7 @@ class JavaProcessor(
     private fun addEventWithClickConstructor(className: String, fields: MutableList<EventWithClickElement>?, pkgName: String, implClass: TypeSpec.Builder?) {
         val method = MethodSpec.constructorBuilder()
             .addParameter(ParameterSpec.builder(ClassName.get(pkgName, className), "target", Modifier.FINAL).build())
+            .addParameter(ParameterSpec.builder(VIEW_CLASS_NAME, "view", Modifier.FINAL).build())
             .addStatement("this.target = target")
             .addModifiers(Modifier.PUBLIC)
         implClass?.addField(ClassName.get(pkgName, className), "target", Modifier.PRIVATE)
@@ -204,7 +205,7 @@ class JavaProcessor(
                 if (implClass?.build()?.fieldSpecs?.map { it.name }?.contains(it.analyticsElement?.className?.toCamelCase()) != true) {
                     implClass?.addField(ClassName.get(pkgName, it.analyticsElement?.className), it.analyticsElement?.className?.toCamelCase(), Modifier.PRIVATE)
                 }
-                method.addStatement("\$N = target.findViewById(\$L)", it.methodName, it.eventOnClick.value)
+                method.addStatement("\$N = view.findViewById(\$L)", it.methodName, it.eventOnClick.value)
                 method.addCode("\$N.setOnClickListener(new \$T() {\n", it.methodName, ON_CLICK_LISTENER_CLASS_NAME)
                 method.addCode("  @Override\n", it.methodName, ON_CLICK_LISTENER_CLASS_NAME)
                 method.addCode("  public void onClick(\$T v) {\n", VIEW_CLASS_NAME)

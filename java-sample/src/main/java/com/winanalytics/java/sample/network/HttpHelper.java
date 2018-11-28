@@ -1,8 +1,7 @@
 package com.winanalytics.java.sample.network;
 
-import com.winfooz.AnalyticsInterceptor;
+import com.winfooz.HttpFactory;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -18,12 +17,8 @@ public class HttpHelper {
 
     public static HttpClient getHttpClient() {
         return new Retrofit.Builder()
-                .client(
-                        new OkHttpClient.Builder()
-                                .addInterceptor(new AnalyticsInterceptor(BASE_URL))
-                                .build()
-                )
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(new HttpFactory(BASE_URL))
                 .baseUrl(BASE_URL)
                 .build()
                 .create(HttpClient.class);

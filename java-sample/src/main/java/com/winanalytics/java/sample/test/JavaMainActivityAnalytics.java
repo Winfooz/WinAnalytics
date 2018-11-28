@@ -9,6 +9,7 @@ import com.winfooz.CallSuccess;
 import com.winfooz.Data;
 import com.winfooz.Event;
 import com.winfooz.Key;
+import com.winfooz.Name;
 import com.winfooz.Value;
 
 /**
@@ -32,7 +33,7 @@ public interface JavaMainActivityAnalytics {
                     @Data(value = @Value("post.title"), key = @Key("title"))
             }
     )
-    void successGetPosts(Post post);
+    void successGetPosts(@Name("post") Post post);
 
     @Keep
     @CallFailure(value = "posts", name = "requestFailed")
