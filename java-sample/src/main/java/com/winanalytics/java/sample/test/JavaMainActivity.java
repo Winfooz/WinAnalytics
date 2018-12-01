@@ -47,7 +47,6 @@ public class JavaMainActivity extends AppCompatActivity implements View.OnClickL
     @BindCallArguments(value = {"posts"})
     void init(Response<List<Post>> response) {
         post = response.body().get(0);
-
     }
 
     @Override
