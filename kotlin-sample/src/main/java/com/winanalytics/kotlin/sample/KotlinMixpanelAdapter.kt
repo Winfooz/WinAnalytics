@@ -5,7 +5,6 @@ import android.util.Pair
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.winfooz.AnalyticsAdapter
 import com.winfooz.MapUtils
-import java.util.*
 
 /**
  * Project: MyApplication6 Created: November 15, 2018

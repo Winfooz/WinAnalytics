@@ -11,7 +11,6 @@ import android.support.annotation.UiThread
 import android.util.Log
 import android.view.View
 import java.lang.reflect.Constructor
-import java.util.*
 import java.util.concurrent.Executors
 
 /**
