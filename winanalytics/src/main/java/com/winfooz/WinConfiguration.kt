@@ -9,7 +9,11 @@ package com.winfooz
 class WinConfiguration {
 
     var adapters: MutableList<AnalyticsAdapter> = mutableListOf()
+        private set
     var indexingClass: Class<*>? = null
+        private set
+    var debug: Boolean = false
+        private set
 
     companion object {
 
@@ -23,6 +27,7 @@ class WinConfiguration {
 
         private val adapters: MutableList<AnalyticsAdapter> by lazy { mutableListOf<AnalyticsAdapter>() }
         private var indexingClass: Class<*>? = null
+        private var debugMode: Boolean = false
 
         fun registerAdapter(adapter: AnalyticsAdapter): Builder {
             adapters.add(adapter)
@@ -34,10 +39,16 @@ class WinConfiguration {
             return this
         }
 
+        fun debugMode(debugMode: Boolean): Builder {
+            this.debugMode = debugMode
+            return this
+        }
+
         fun build(): WinConfiguration {
             val winConfiguration = WinConfiguration()
             winConfiguration.adapters = adapters
             winConfiguration.indexingClass = indexingClass
+            winConfiguration.debug = debugMode
             return winConfiguration
         }
     }

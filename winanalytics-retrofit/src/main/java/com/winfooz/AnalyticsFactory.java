@@ -8,11 +8,11 @@ import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 
-public class HttpFactory extends CallAdapter.Factory {
+public class AnalyticsFactory extends CallAdapter.Factory {
 
     private final String baseUrl;
 
-    public HttpFactory(String baseUrl) {
+    public AnalyticsFactory(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
@@ -29,6 +29,13 @@ public class HttpFactory extends CallAdapter.Factory {
             throw new IllegalStateException(msg);
         }
         Type responseType = getParameterUpperBound(0, (ParameterizedType) returnType);
-        return new HttpCallAdapter<>(responseType, baseUrl);
+        boolean logEvent = false;
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().equals(AnalyticsCall.class)) {
+                logEvent = true;
+                break;
+            }
+        }
+        return new AnalyticsCallAdapter<>(responseType, baseUrl, logEvent);
     }
 }

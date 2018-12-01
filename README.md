@@ -9,89 +9,265 @@
 
 A light-weight android library that can be quickly integrated into any app to use analytics tools.
 - Full Kotlin support.
-- Support multiple analytical tools e.g(Firebase, Fabric, Mixpanel).
+- Custom adapters for support all analytical tools.
 - Annotations based.
-- 100% reflection free.
+- Support Retrofit calls for log events automatically.
+- Support log events when user clicks on views.
+- Support screens events.
+- Null safety.
+
 # Contributing:
 If you'd like to contribute, please take a look at the [`Contributing`](https://github.com/Winfooz/WinAnalytics/wiki/Contributing) page on the Wiki.
 # Example WinAnalytics:
 
 **Application class**
-```kotlin
-@AnalyticsConfiguration(
-        AnalyticsClient(type = AnalyticsTypes.FIREBASE, enabled=false),
-        AnalyticsClient(type = AnalyticsTypes.FABRIC),
-        AnalyticsClient(key = "mixpanelToken", type = AnalyticsTypes.MIXPANEL)
-)
-class MyApplication : Application() {
+```java
+public class MyApplication extends Application {
 
-    override fun onCreate() {
-        super.onCreate()
-        Fabric.with(this, Crashlytics())
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        WinConfiguration configuration = WinConfiguration.builder()
+                .registerAdapter(new MixpanelAdapter(this, "token"))
+                .registerAdapter(new FirebaseAdapter(this))
+                .registerAdapter(new FabricAdapter(this))
+                ...
+                .debugMode(BuildConfig.DEBUG)
+                .build();
+        WinAnalytics.init(configuration);
     }
 }
 ```
 
-**Model class**
-```kotlin
-data class User(
-        @Analytics(
-                Event("Login"),
-                Event("Logout")
-        )
-        val name: String,
-
-        @Analytics(Event("Logout"))
-        val email: String,
-
-        @Analytics(Event("Login"))
-        val phone: String,
-
-        @Analytics(
-                Event("Login"),
-                Event("Logout")
-        )
-        val age: Int,
-
-        @AnalyticsEmbedded
-        val address: Address?
+**Analytics interfaces**
+```java
+@Analytics(
+        events = {
+                @Data(value = @Value("post.title"), key = @Key("title")),
+                @Data(value = @Value("post.body"), key = @Key("body"))
+        },
+        timestamp = true
 )
+public interface MainActivityAnalytics {
 
-data class Address(
-        @Analytics(Event("Login"))
-        val address: String,
+    // This event will override class @Analytics events
+    @Event(
+            value = "Success get posts",
+            events = {
+                    @Data(value = @Value("post.title"), key = @Key("title")),
+                    @Data(value = @Value("otherParam"), key = @Key("otherParam"))
+            }
+    )
+    void successGetPosts(Post post, String otherParam);
 
-        @Analytics(Event("Login"))
-        val latitude: String,
+    // This event will inherit values from class @Analytics annotation
+    @Event(value = "Failed get posts")
+    void failedGetPosts(Post post);
 
-        @Analytics(Event("Login"))
-        val longitude: String
-)
-```
-
-**MainActivity**
-```kotlin
-private fun onHelloWorldClicked(view: View) {
-    Analytics.getInstance(applicationContext).userAnalytics.loginEvent(user)
+    // This event will inherit values from class @Analytics annotation
+    @Event(value = "Failed get posts1")
+    void failed1GetPosts(Post post);
 }
 ```
 
-# Example analytics from more than a place:
+**Analytics wrapper**
+```java
+@AnalyticsWrapper
+public interface MyAnalyticsWrapper {
 
+    // This method will be return MainActivityAnalytics implementation
+    MainActivityAnalytics mainActivityAnalytics();
+}
+```
+
+**Access MyAnalyticsWrapper**
+```java
+public class MainActivity extends AppCompatActivity {
+
+    private JavaMyAnalyticsWrapper wrapper;
+    private JavaMainActivityAnalytics mainActivityAnalytics;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        wrapper = WinAnalytics.create(JavaMyAnalyticsWrapper.class);
+        mainActivityAnalytics = wrapper.mainActivityAnalytics();
+
+        Post post = new Post();
+        post.setTitle("title");
+        post.setBody("body");
+
+        mainActivityAnalytics.failedGetPosts(post);
+    }
+}
+```
+
+# Example analytics when user clicks on button:
+
+**Analytics interface**
+```java
+@Analytics
+public interface JavaMainActivityAnalytics {
+
+    @Event(
+            value = "Failed get posts",
+            events = {
+                    @Data(value = @Value("post.title"), key = @Key("title"))
+            },
+            timestamp = true
+    )
+    void failedGetPosts(/* This name for WinAnalytics know whitch object will bind here */ @Name("post") Post post);
+}
+```
 **MainActivity**
-```kotlin
-@AnalyticsEmbedded
-var user: User? = null
+```java
+public class MainActivity extends AppCompatActivity {
 
-@AnalyticsEmbedded
-var address: Address? = null
+    private Destroyable destroyable;
 
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    @Name("post")
+    @Bind(R.id.btn_login)
+    Post post;
 
-    Analytics.getInstance(applicationContext).mainActivityAnalytics.loginEvent(this)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Don't forget add this line to bind clicks listeners to views
+        destroyable = WinAnalytics.bind(this);
+    }
+
+    @EventOnClick(value = R.id.btn_login, event = "Failed get posts")
+    void onLoginClicked() {
+        // Do what you want here after user clicks on button and WinAnalytics will log event automatically for you
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        destroyable.destroy();
+    }
+}
+```
+
+# Network analytics
+
+What if you want log events based on retrofit call success or failure, WinAnalytics already supports this type of analytics.
+
+**Http client**
+```java
+public interface HttpClient {
+
+    // This for tell WinAnalytisc this call supports analytics
+    @AnalyticsCall
+    @GET("posts")
+    Call<List<Post>> getPosts();
+}
+```
+then after add `@Analytics` for your call you need to specify what event you want to call when this call response success or failure
+
+**Analytics interface**
+```java
+@Analytics
+public interface JavaMainActivityAnalytics {
+
+    // That means this analyics will fire after "posts" api response success and "name" means you should use call arguments whitch named with "getPostsSuccess"
+    @CallSuccess(value = "posts", name = "getPostsSuccess")
+    @Event(
+            value = "Failed get posts",
+            events = {
+                    @Data(value = @Value("post.title"), key = @Key("title"))
+            },
+            timestamp = true
+    )
+    void failedGetPosts(@Name("post") Post post);
+}
+```
+
+Now in your activity or whatever you want to log events you need to add this code.
+
+```java
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    // value means your api, and names means name whitch you specifyed in `@CallSuccess`
+    @CallArgument(value = {"posts"}, names = "getPostsSuccess")
+    Post post;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // You need register and unregister your call arguments and binds
+        WinAnalytics.getInstance().register(this);
+
+        findViewById(R.id.btn_login2).setOnClickListener(this);
+    }
+
+    // this method will return api response for log initialize your variable before log event
+    @BindCallArguments(value = {"posts"})
+    void init(Response<List<Post>> response) {
+        post = response.body().get(0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        WinAnalytics.getInstance().unregister(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        HttpHelper.getHttpClient().getPosts().enqueue(new Callback<List<Post>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {
+                // Do what you want after response and let WinAnalytics log network events for you
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Post>> call, @NonNull Throwable t) {
+            }
+        });
+    }
+}
+```
+
+The last thing you want to add is indexing interface like this
+
+```java
+@AnalyticsIndex
+public interface MyAnalyticsIndex { }
+```
+
+Now WinAnalytics will log events automatically for you in a background thread, But you need to register WinAnalytics call adapter factory when you initialize retrofit like this
+```java
+public static HttpClient getHttpClient() {
+    return new Retrofit.Builder()
+        .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(new AnalyticsFactory(BASE_URL))
+        .baseUrl(BASE_URL)
+        .build()
+        .create(HttpClient.class);
+}
+```
+
+# Log screens opens events
+
+For log screen events you just want to annotate your class with `@Screen` like this
+```java
+@Screen(value = "Main activity", timestamp = true)
+public class JavaMainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Don't forget to add this line for log event and bind other cliks if you have.
+        WinAnalytics.bind(this);
+    }
 }
 ```
 
@@ -105,18 +281,32 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.winfooz.winanalytics:winanalytics:1.0.3-beta'
-    kapt 'com.winfooz.winanalytics:compiler:1.0.3-beta'
+    // if you want log retroift calls events you need to add this dependency
+    implementation 'com.winfooz:winanalytics-retroft:1.0.10-RC'
+
+    // but if you want just log clicks events or manually events you need to add this dependency
+    implementation 'com.winfooz:winanalytics:1.0.10-RC'
+
+    // Always you need to add this dependency.
+    kapt 'com.winfooz:winanalytics-compiler:1.0.10-RC'
 }
 ```
 
 # Support annotations
-```kotlin
-@Analytics()
-@AnalyticsConfiguration()
-@AnalyticsEmbedded()
-@AnalyticsTypes()
-@AnalyticsClient()
+```java
+@Analytics
+@AnalyticsCall
+@AnalyticsIndex
+@AnalyticsWrapper
+@Bind
+@BindCallArguments
+@CallArgument
+@CallFailure
+@CallSuccess
+@Event
+@EventOnClick
+@Name
+@Screen
 ```
 ## License
 

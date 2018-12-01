@@ -66,10 +66,13 @@ class DataElement(
 
     private fun getReference(reference: String): String {
         val references = reference.split(".")
-        var newReference = references[0]
+        var newReference = "${references[0]} == null ? null : ${references[0]}"
+        var realReference = references[0]
         kotlinReference = references[0]
         references.subList(1, references.size).forEach {
-            newReference += ".get${it.substring(0, 1).toUpperCase()}${it.substring(1)}()"
+            val ref = ".get${it.substring(0, 1).toUpperCase()}${it.substring(1)}() == null ? null : $realReference.get${it.substring(0, 1).toUpperCase()}${it.substring(1)}()"
+            realReference += ".get${it.substring(0, 1).toUpperCase()}${it.substring(1)}()"
+            newReference += ref
             kotlinReference += "?.$it"
         }
         return newReference

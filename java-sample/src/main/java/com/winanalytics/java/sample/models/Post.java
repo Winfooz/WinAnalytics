@@ -23,6 +23,9 @@ public class Post {
     @SerializedName("body")
     @Expose
     private String body;
+    @SerializedName("post1")
+    @Expose
+    private Post post;
 
     public Integer getUserId() {
         return userId;
@@ -54,5 +57,13 @@ public class Post {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
     }
 }

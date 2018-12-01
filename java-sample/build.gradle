@@ -33,6 +33,6 @@ dependencies {
     implementation "com.mixpanel.android:mixpanel-android:5.4.1"
     implementation "com.squareup.retrofit2:converter-gson:2.5.0"
 
-    implementation project(':winanalytics-okhttp')
+    implementation project(':winanalytics-retrofit')
     annotationProcessor project(":winanalytics-compiler")
 }

@@ -9,4 +9,4 @@ package com.winfooz
 @Target(AnnotationTarget.FUNCTION)
 @MustBeDocumented
 @SuppressWarnings("unused")
-annotation class BindCallArguments
+annotation class BindCallArguments(vararg val value: String)

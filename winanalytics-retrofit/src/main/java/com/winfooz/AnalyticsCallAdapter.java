@@ -5,14 +5,16 @@ import java.lang.reflect.Type;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 
-public class HttpCallAdapter<R> implements CallAdapter<R, Call<R>> {
+public class AnalyticsCallAdapter<R> implements CallAdapter<R, Call<R>> {
 
     private final Type type;
     private final String baseUrl;
+    private final boolean logEvent;
 
-    HttpCallAdapter(Type type, String baseUrl) {
+    AnalyticsCallAdapter(Type type, String baseUrl, boolean logEvent) {
         this.type = type;
         this.baseUrl = baseUrl;
+        this.logEvent = logEvent;
     }
 
     @NonNull
@@ -24,6 +26,6 @@ public class HttpCallAdapter<R> implements CallAdapter<R, Call<R>> {
     @NonNull
     @Override
     public Call<R> adapt(@NonNull Call<R> call) {
-        return new HttpEnqueueAdapter<>(baseUrl, call);
+        return new AnalyticsEnqueueAdapter<>(baseUrl, call, logEvent);
     }
 }

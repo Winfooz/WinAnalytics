@@ -13,8 +13,8 @@ import com.winanalytics.java.sample.network.HttpHelper;
 import com.winfooz.Bind;
 import com.winfooz.BindCallArguments;
 import com.winfooz.CallArgument;
-import com.winfooz.EventOnClick;
 import com.winfooz.Name;
+import com.winfooz.Screen;
 import com.winfooz.WinAnalytics;
 
 import java.util.List;
@@ -24,6 +24,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 @Keep
+@Screen("Mohamed")
 public class JavaMainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "JavaMainActivity";
@@ -43,14 +44,10 @@ public class JavaMainActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.btn_login2).setOnClickListener(this);
     }
 
-    @EventOnClick(value = R.id.btn_login1, event = "Success get posts")
-    void onLogin2Clicked() {
-
-    }
-
-    @BindCallArguments
+    @BindCallArguments(value = {"posts"})
     void init(Response<List<Post>> response) {
         post = response.body().get(0);
+
     }
 
     @Override

@@ -1,10 +1,7 @@
 package com.winanalytics.java.sample.test;
 
-import android.support.annotation.Keep;
-
 import com.winanalytics.java.sample.models.Post;
 import com.winfooz.Analytics;
-import com.winfooz.CallFailure;
 import com.winfooz.CallSuccess;
 import com.winfooz.Data;
 import com.winfooz.Event;
@@ -18,30 +15,16 @@ import com.winfooz.Value;
  *
  * @author Mohamed Hamdan
  */
-@Keep
-@Analytics(events = {
-        @Data(value = @Value("post.title"), key = @Key("title")),
-        @Data(value = @Value("post.body"), key = @Key("body"))
-}, timestamp = true)
+@Analytics
 public interface JavaMainActivityAnalytics {
 
-    @Keep
-    @CallSuccess(value = "posts", name = "requestSuccess")
+    @CallSuccess(value = "posts", name = "getPostsSuccess")
     @Event(
-            value = "Success get posts",
+            value = "Failed get posts",
             events = {
                     @Data(value = @Value("post.title"), key = @Key("title"))
-            }
+            },
+            timestamp = true
     )
-    void successGetPosts(@Name("post") Post post);
-
-    @Keep
-    @CallFailure(value = "posts", name = "requestFailed")
-    @Event(value = "Failed get posts")
-    void failedGetPosts(Post post);
-
-    @Keep
-    @CallFailure(value = "posts", name = "requestFailed")
-    @Event(value = "Failed get posts1")
-    void failed1GetPosts(Post post);
+    void failedGetPosts(@Name("post") Post post);
 }

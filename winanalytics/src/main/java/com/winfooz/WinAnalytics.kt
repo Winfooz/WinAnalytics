@@ -2,6 +2,8 @@ package com.winfooz
 
 import android.app.Activity
 import android.app.Dialog
+import android.os.Handler
+import android.os.Looper
 import android.support.annotation.CheckResult
 import android.support.annotation.NonNull
 import android.support.annotation.Nullable
@@ -17,8 +19,10 @@ import java.util.concurrent.Executors
  *
  * @author Mohamed Hamdan
  */
+@Suppress("unused")
 class WinAnalytics private constructor(private val configuration: WinConfiguration) {
 
+    private val handler = Handler(Looper.getMainLooper())
     private val executor = Executors.newSingleThreadExecutor()
     private val registeredObjects = ArrayList<CallArgumentField>()
     private var indexObject: Any? = null
@@ -53,15 +57,15 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
         }
     }
 
-    fun initEventArguments(baseUrl: String, url: String, obj: Any?, success: Boolean) {
-        httpLoggingInitArguments(getExactUrl(baseUrl, url), obj, success)
+    fun initEventArguments(baseUrl: String, url: String, obj: Any?, success: Boolean, callback: () -> Unit) {
+        httpLoggingInitArguments(getExactUrl(baseUrl, url), obj, success, callback)
     }
 
-    protected fun logSuccess(baseUrl: String, url: String) {
+    fun logSuccess(baseUrl: String, url: String) {
         httpLogging(getExactUrl(baseUrl, url), true)
     }
 
-    protected fun logFailure(baseUrl: String, url: String) {
+    fun logFailure(baseUrl: String, url: String) {
         httpLogging(getExactUrl(baseUrl, url), false)
     }
 
@@ -98,7 +102,8 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
         }
     }
 
-    private fun httpLoggingInitArguments(url: String, obj: Any?, success: Boolean) {
+    @Suppress("UNCHECKED_CAST")
+    private fun httpLoggingInitArguments(url: String, obj: Any?, success: Boolean, callback: () -> Unit) {
         executor.execute {
             val tag = if (success) "$url:success" else "$url:failure"
             if (getConfiguration().indexingClass != null) {
@@ -117,11 +122,13 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
                             ?.javaClass
                             ?.getDeclaredMethod("getEvents")
                             ?.invoke(instance.indexObject) as? Map<String, HttpEvent>
-                        initArguments(map?.get(tag), obj)
+                        initArguments(map?.get(tag), obj, callback)
                     }
                 } catch (e: Exception) {
                     throw RuntimeException("Unable to find index class for $clsName", e)
                 }
+            } else {
+                callback()
             }
         }
     }
@@ -134,30 +141,43 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
                 constructor.isAccessible = true
                 val instance = constructor.newInstance()
                 val args = registeredObjects.filter { it.names.contains(event.name) }.map { it.field.get(it.enclosingObject) }.toTypedArray()
-                instance.javaClass
-                    .getDeclaredMethod(event.method, *event.parameters)
-                    .invoke(instance, *args)
+                handler.post {
+                    try {
+                        instance.javaClass
+                            .getDeclaredMethod(event.method, *event.parameters)
+                            .invoke(instance, *args)
+                    } catch (ignored: Exception) {
+                    }
+                }
             } catch (ignored: Exception) {
                 Log.e("", "")
             }
         }
     }
 
-    private fun initArguments(event: HttpEvent?, obj: Any?) {
+    private fun initArguments(event: HttpEvent?, obj: Any?, callback: () -> Unit) {
         if (event != null) {
             try {
-                val enclosingObject = registeredObjects.find { it.names.contains(event.name) }?.enclosingObject
+                val argumentField = registeredObjects.find { it.names.contains(event.name) }
+                val enclosingObject = argumentField?.enclosingObject
                 enclosingObject?.javaClass?.declaredMethods?.forEach {
                     it.isAccessible = true
-                    if (it.getAnnotation(BindCallArguments::class.java) != null) {
-                        it.invoke(enclosingObject, obj)
+                    val arguments = it.getAnnotation(BindCallArguments::class.java)
+                    if (arguments != null && arguments.value.any { value -> argumentField.endpoints.contains(value) }) {
+                        handler.post {
+                            try {
+                                it.invoke(enclosingObject, obj)
+                            } catch (ignored: Exception) {
+                            }
+                        }
                         return@forEach
                     }
                 }
             } catch (ignored: Exception) {
-                Log.e("WinAnalytics", ignored.message, ignored)
+                Log.d(TAG, "Cannot find to instantiate ")
             }
         }
+        callback()
     }
 
     private fun getExactUrl(baseUrl: String, url: String): String {
@@ -166,6 +186,7 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
 
     companion object {
 
+        private const val TAG = "WinAnalytics"
         private val ANALYTICS: MutableMap<Class<*>?, Constructor<out Destroyable>?> = LinkedHashMap()
 
         @JvmStatic
@@ -190,6 +211,7 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
                 throw RuntimeException("WinAnalytics already initialized")
             } catch (e: IllegalAccessException) {
                 instance = WinAnalytics(configuration)
+                Log.d(TAG, "Initialized successfully")
             }
         }
 
@@ -201,7 +223,7 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
                 val classLoader = cls.classLoader
                 return if (classLoader != null) {
                     classLoader
-                        .loadClass(clsName + "_Analytics")
+                        .loadClass(clsName + "_Impl")
                         .getDeclaredConstructor()
                         .newInstance() as T
                 } else {
@@ -224,6 +246,20 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
         @UiThread
         fun bind(@NonNull target: View): Destroyable {
             return bind(target, target)
+        }
+
+        @JvmStatic
+        @NonNull
+        @UiThread
+        fun bind(@NonNull target: Any): Destroyable {
+            val constructor = findBindingConstructorForClass(target.javaClass)
+                ?: return Destroyable.EMPTY_DESTROYABLE
+            return try {
+                constructor.newInstance()
+            } catch (e: Exception) {
+                Log.d(TAG, "Unable to instantiate " + target.javaClass.name, e)
+                Destroyable.EMPTY_DESTROYABLE
+            }
         }
 
         @JvmStatic
@@ -255,7 +291,15 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
                 ?: return Destroyable.EMPTY_DESTROYABLE
             return try {
                 constructor.newInstance(target, source)
+            } catch (e: IllegalArgumentException) {
+                try {
+                    constructor.newInstance()
+                } catch (e: Exception) {
+                    Log.d(TAG, "Unable to instantiate " + target.javaClass.name, e)
+                    Destroyable.EMPTY_DESTROYABLE
+                }
             } catch (e: Exception) {
+                Log.d(TAG, "Unable to instantiate " + target.javaClass.name, e)
                 Destroyable.EMPTY_DESTROYABLE
             }
         }
@@ -265,19 +309,31 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
         @CheckResult
         @UiThread
         private fun findBindingConstructorForClass(cls: Class<*>?): Constructor<out Destroyable>? {
-            var bindingCtor: Constructor<out Destroyable>? = ANALYTICS[cls]
-            if (bindingCtor != null || ANALYTICS.containsKey(cls)) {
-                return bindingCtor
+            var constructor: Constructor<out Destroyable>? = ANALYTICS[cls]
+            if (constructor != null || ANALYTICS.containsKey(cls)) {
+                return constructor
             }
             val clsName = cls?.name
-            bindingCtor = try {
+            constructor = try {
                 val bindingClass = cls?.classLoader?.loadClass(clsName + "_Analytics")
                 bindingClass?.getConstructor(cls, View::class.java) as Constructor<out Destroyable>
             } catch (e: ClassNotFoundException) {
+                Log.d(TAG, "Unable to find Analytics class for " + cls?.name + " trying super class" + cls?.superclass?.name, e)
                 findBindingConstructorForClass(cls?.superclass)
+            } catch (e: NoSuchMethodException) {
+                try {
+                    val bindingClass = cls?.classLoader?.loadClass(clsName + "_Analytics")
+                    bindingClass?.getDeclaredConstructor() as Constructor<out Destroyable>
+                } catch (e: Exception) {
+                    Log.d(TAG, "Unable to find Analytics class for " + cls?.name, e)
+                    return null
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "Unable to find Analytics class for " + cls?.name, e)
+                return null
             }
-            ANALYTICS[cls] = bindingCtor
-            return bindingCtor
+            ANALYTICS[cls] = constructor
+            return constructor
         }
     }
 }

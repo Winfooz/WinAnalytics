@@ -1,6 +1,7 @@
 package com.winanalytics.java.sample.network;
 
 import com.winanalytics.java.sample.models.Post;
+import com.winfooz.AnalyticsCall;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import retrofit2.http.GET;
  */
 public interface HttpClient {
 
+    @AnalyticsCall
     @GET("posts")
     Call<List<Post>> getPosts();
 }
