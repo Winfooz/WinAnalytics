@@ -10,8 +10,7 @@ import org.robolectric.annotation.Config;
 import java.util.HashMap;
 
 /**
- * Project: WinAnalytics2
- * Created: November 18, 2018
+ * Project: WinAnalytics2 Created: November 18, 2018
  *
  * @author Mohamed Hamdan
  */

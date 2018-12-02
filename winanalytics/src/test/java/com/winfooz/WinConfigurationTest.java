@@ -7,8 +7,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 /**
- * Project: WinAnalytics2
- * Created: November 18, 2018
+ * Project: WinAnalytics2 Created: November 18, 2018
  *
  * @author Mohamed Hamdan
  */
@@ -23,7 +22,8 @@ public class WinConfigurationTest {
 
     @Test
     public void test_registerAdapter() {
-        Assert.assertTrue(WinConfiguration.builder().registerAdapter(pair -> {
-        }).build().getAdapters().size() > 0);
+        Assert.assertTrue(
+                WinConfiguration.builder().registerAdapter(pair -> {}).build().getAdapters().size()
+                        > 0);
     }
 }

@@ -5,8 +5,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 /**
- * Project: WinAnalytics2
- * Created: November 18, 2018
+ * Project: WinAnalytics2 Created: November 18, 2018
  *
  * @author Mohamed Hamdan
  */
@@ -14,19 +13,14 @@ import org.robolectric.RobolectricTestRunner;
 public class WinAnalyticsTest {
 
     @Test
-    public void test_notFoundClass() {
-
-    }
+    public void test_notFoundClass() {}
 
     @Test
-    public void test_findAnalyticsClass() {
-    }
+    public void test_findAnalyticsClass() {}
 
     @Test
-    public void test_initAnalytics() {
-    }
+    public void test_initAnalytics() {}
 
     @Test
-    public void test_createExistWrapper() {
-    }
+    public void test_createExistWrapper() {}
 }
