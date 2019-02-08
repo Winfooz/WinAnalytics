@@ -1,4 +1,4 @@
-# WinAnalytics(Beta) library
+# WinAnalytics library
 [![Build Status](https://travis-ci.org/Winfooz/WinAnalytics.svg?branch=master)](https://travis-ci.org/Winfooz/WinAnalytics)
 [![Deploy Status](https://app.buddy.works/mohamednayef95/winanalytics-1/pipelines/pipeline/158574/badge.svg?token=071324226326a701b263c3a2755acc1f179227f6bb2f1d11c84cbbfd3e77c732 "Deploy Status")](https://app.buddy.works/mohamednayef95/winanalytics-1/pipelines/pipeline/158574)
 [![Download](https://api.bintray.com/packages/mnayef95/WinAnalytics/com.winfooz:winanalytics/images/download.svg) ](https://bintray.com/mnayef95/WinAnalytics/com.winfooz%3Awinanalytics/_latestVersion)
