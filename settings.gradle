@@ -1,1 +1,3 @@
-include ':java-sample', ':winanalytics-compiler', ':winanalytics-annotations', ':winanalytics', ':kotlin-sample', ':winanalytics-retrofit'
+include ':winanalytics-compiler', ':winanalytics-annotations', ':winanalytics', ':sample', ':winanalytics-retrofit', ':adapter-mixpanel', ':adapter-firebase'
+project(':adapter-mixpanel').projectDir = new File('./winanalytics-adapters/adapter-mixpanel')
+project(':adapter-firebase').projectDir = new File('./winanalytics-adapters/adapter-firebase')

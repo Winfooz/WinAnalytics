@@ -8,7 +8,6 @@ import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeSpec
 import com.winfooz.elements.AnalyticsElement
-import com.winfooz.elements.AnalyticsIndexElement
 import com.winfooz.elements.AnalyticsWrapperElement
 import com.winfooz.elements.AnalyticsWrapperMethod
 import com.winfooz.elements.EventElement
@@ -33,7 +32,7 @@ class JavaProcessor(
     private var screenElements: MutableSet<ScreenElement>,
     private var analyticsElements: MutableSet<AnalyticsElement>,
     private var eventWithClickElements: MutableSet<EventWithClickElement>,
-    private var analyticsIndexElements: MutableSet<AnalyticsIndexElement>
+    private var winAnalyticsIndex: String?
 ) : Processor {
 
     override fun process() {
@@ -49,7 +48,7 @@ class JavaProcessor(
             val implClass = TypeSpec.classBuilder("${element.className}_Impl")
                 .addSuperinterface(ClassName.get(element.pkgName, element.className))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-            element.methods.forEach { it ->
+            element.methods.forEach {
                 val method = generateAnalyticsWrapperMethod(implClass, it)
                 method?.let {
                     implClass.addMethod(method)
@@ -69,8 +68,8 @@ class JavaProcessor(
             val implClass = TypeSpec.classBuilder("${element.className}_Impl")
                 .addSuperinterface(ClassName.get(element.pkgName, element.className))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-            element.events.forEach { it ->
-                val method = generateAnalyticsMethod(it, element)
+            element.events.forEach { event ->
+                val method = generateAnalyticsMethod(event, element)
                 method?.let {
                     implClass.addMethod(it)
                 }
@@ -101,7 +100,10 @@ class JavaProcessor(
             val date = if (event.data.isNotEmpty()) {
                 event.data
             } else {
-                element.data
+                element.data.addAll(event.addedData)
+                element.data.filter { data ->
+                    event.removedData.all { it.value != data.data.key.value }
+                }
             }
             date.forEach {
                 method.addStatement(
@@ -156,7 +158,7 @@ class JavaProcessor(
 
     private fun generateEventWithClick() {
         val groups = eventWithClickElements.groupBy { "${it.pkgName},${it.className}" }
-        groups.keys.forEach { it ->
+        groups.keys.forEach {
             val className = it.split(",")[1]
             val pkgName = it.split(",")[0]
             val implClass = TypeSpec.classBuilder("${className}_Analytics")
@@ -200,20 +202,20 @@ class JavaProcessor(
             .addStatement("this.target = target")
             .addModifiers(Modifier.PUBLIC)
         implClass?.addField(ClassName.get(pkgName, className), "target", Modifier.PRIVATE)
-        fields?.forEach { it ->
-            it.analyticsElement?.pkgName?.let { pkgName ->
-                if (implClass?.build()?.fieldSpecs?.map { it.name }?.contains(it.analyticsElement?.className?.toCamelCase()) != true) {
-                    implClass?.addField(ClassName.get(pkgName, it.analyticsElement?.className), it.analyticsElement?.className?.toCamelCase(), Modifier.PRIVATE)
+        fields?.forEach { event ->
+            event.analyticsElement?.pkgName?.let { pkgName ->
+                if (implClass?.build()?.fieldSpecs?.map { it.name }?.contains(event.analyticsElement?.className?.toCamelCase()) != true) {
+                    implClass?.addField(ClassName.get(pkgName, event.analyticsElement?.className), event.analyticsElement?.className?.toCamelCase(), Modifier.PRIVATE)
                 }
-                method.addStatement("\$N = view.findViewById(\$L)", it.methodName, it.eventOnClick.value)
-                method.addCode("\$N.setOnClickListener(new \$T() {\n", it.methodName, ON_CLICK_LISTENER_CLASS_NAME)
-                method.addCode("  @Override\n", it.methodName, ON_CLICK_LISTENER_CLASS_NAME)
+                method.addStatement("\$N = view.findViewById(\$L)", event.methodName, event.eventOnClick.value)
+                method.addCode("\$N.setOnClickListener(new \$T() {\n", event.methodName, ON_CLICK_LISTENER_CLASS_NAME)
+                method.addCode("  @Override\n", event.methodName, ON_CLICK_LISTENER_CLASS_NAME)
                 method.addCode("  public void onClick(\$T v) {\n", VIEW_CLASS_NAME)
-                method.addCode("    if (${it.analyticsElement?.className?.toCamelCase()} == null) {\n")
-                method.addCode("      ${it.analyticsElement?.className?.toCamelCase()} = new ${it.analyticsElement?.className}_Impl();\n")
+                method.addCode("    if (${event.analyticsElement?.className?.toCamelCase()} == null) {\n")
+                method.addCode("      ${event.analyticsElement?.className?.toCamelCase()} = new ${event.analyticsElement?.className}_Impl();\n")
                 method.addCode("    }\n")
-                method.addCode("    ${it.analyticsElement?.className?.toCamelCase()}.${it.analyticsEvent?.methodName}(${it.parameters.joinToString { param -> "target.${param?.simpleName}" }});\n")
-                method.addCode("    target.${it.methodName}();\n")
+                method.addCode("    target.${event.methodName}();\n")
+                method.addCode("    ${event.analyticsElement?.className?.toCamelCase()}.${event.analyticsEvent?.methodName}(${event.parameters.joinToString { param -> "target.${param?.simpleName}" }});\n")
                 method.addCode("  }\n});\n")
             }
         }
@@ -246,7 +248,7 @@ class JavaProcessor(
                 "\$N.put(\$S, \$S)",
                 "pair.second",
                 "screen_name",
-                screen.screen?.value
+                if (screen.screen?.value == "") screen.className else screen.screen?.value
             )
             if (screen.screen?.timestamp == true) {
                 method.addStatement(
@@ -274,7 +276,7 @@ class JavaProcessor(
     }
 
     private fun generateScreens() {
-        screenElements.forEach { it ->
+        screenElements.forEach {
             val implClass = TypeSpec.classBuilder("${it.className}_Analytics")
                 .addSuperinterface(DESTROYABLE_CLASS_NAME)
                 .addAnnotation(KEEP_CLASS_NAME)
@@ -303,16 +305,17 @@ class JavaProcessor(
     }
 
     private fun generateIndex() {
-        analyticsIndexElements.forEach {
+        winAnalyticsIndex?.let {
             try {
-                val implClass = TypeSpec.classBuilder("${it.className}_Impl")
+                val lastIndex = it.lastIndexOf('.')
+                val implClass = TypeSpec.classBuilder(it.substring(lastIndex + 1))
                     .addAnnotation(KEEP_CLASS_NAME)
                     .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
 
                 addIndexConstructor(implClass)
                 addIndexEventsGetterMethod(implClass)
 
-                val javaFile = JavaFile.builder(it.pkgName, implClass.build()).build()
+                val javaFile = JavaFile.builder(it.substring(0, lastIndex), implClass.build()).build()
                 javaFile.writeTo(filer)
             } catch (ignored: IOException) {
             }

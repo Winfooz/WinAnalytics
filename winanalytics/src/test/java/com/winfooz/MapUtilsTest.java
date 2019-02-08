@@ -19,6 +19,6 @@ public class MapUtilsTest {
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("test", "test");
 
-        Assert.assertTrue(MapUtils.toJsonObject(hashMap).has("test"));
+        Assert.assertTrue(MapUtils.INSTANCE.toJsonObject(hashMap).has("test"));
     }
 }

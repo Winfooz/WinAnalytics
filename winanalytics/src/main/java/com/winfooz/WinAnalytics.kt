@@ -6,7 +6,6 @@ import android.os.Handler
 import android.os.Looper
 import android.support.annotation.CheckResult
 import android.support.annotation.NonNull
-import android.support.annotation.Nullable
 import android.support.annotation.UiThread
 import android.util.Log
 import android.view.View
@@ -111,7 +110,7 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
                     val classLoader = getConfiguration().indexingClass?.classLoader
                     if (classLoader != null && indexObject == null) {
                         instance.indexObject = classLoader
-                            .loadClass(clsName + "_Impl")
+                            .loadClass(clsName)
                             .getDeclaredConstructor()
                             .newInstance()
                     }
@@ -132,6 +131,7 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
         }
     }
 
+    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     private fun logEvent(event: HttpEvent?) {
         if (event != null) {
             try {
@@ -139,11 +139,11 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
                     .getDeclaredConstructor()
                 constructor.isAccessible = true
                 val instance = constructor.newInstance()
-                val args = registeredObjects.filter { it.names.contains(event.name) }.map { it.field.get(it.enclosingObject) }.toTypedArray()
+                val args = registeredObjects.filter { it.names?.contains(event.name) == true }.map { it.field?.get(it.enclosingObject) }.toTypedArray()
                 handler.post {
                     try {
                         instance.javaClass
-                            .getDeclaredMethod(event.method, *event.parameters)
+                            .getDeclaredMethod(event.method, *(event.parameters ?: arrayOf()))
                             .invoke(instance, *args)
                     } catch (ignored: Exception) {
                     }
@@ -155,28 +155,33 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
     }
 
     private fun initArguments(event: HttpEvent?, obj: Any?, callback: () -> Unit) {
+        var invoked = false
         if (event != null) {
             try {
-                val argumentField = registeredObjects.find { it.names.contains(event.name) }
+                val argumentField = registeredObjects.find { it.names?.contains(event.name) == true }
                 val enclosingObject = argumentField?.enclosingObject
-                enclosingObject?.javaClass?.declaredMethods?.forEach {
-                    it.isAccessible = true
-                    val arguments = it.getAnnotation(BindCallArguments::class.java)
-                    if (arguments != null && arguments.value.any { value -> argumentField.endpoints.contains(value) }) {
+                for (method in enclosingObject?.javaClass?.declaredMethods ?: arrayOf()) {
+                    method.isAccessible = true
+                    val arguments = method.getAnnotation(BindCallArguments::class.java)
+                    if (arguments != null && arguments.value.any { value -> argumentField?.endpoints?.contains(value) == true }) {
+                        invoked = true
                         handler.post {
                             try {
-                                it.invoke(enclosingObject, obj)
+                                method.invoke(enclosingObject, obj)
                             } catch (ignored: Exception) {
                             }
+                            callback()
                         }
-                        return@forEach
+                        break
                     }
                 }
             } catch (ignored: Exception) {
                 Log.d(TAG, "Cannot find to instantiate ")
             }
         }
-        callback()
+        if (!invoked) {
+            callback()
+        }
     }
 
     private fun getExactUrl(baseUrl: String, url: String): String {
@@ -234,21 +239,18 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
         }
 
         @JvmStatic
-        @NonNull
         @UiThread
         fun bind(target: Activity): Destroyable {
             return bind(target, target.window.decorView)
         }
 
         @JvmStatic
-        @NonNull
         @UiThread
         fun bind(@NonNull target: View): Destroyable {
             return bind(target, target)
         }
 
         @JvmStatic
-        @NonNull
         @UiThread
         fun bind(@NonNull target: Any): Destroyable {
             val constructor = findBindingConstructorForClass(target.javaClass)
@@ -262,30 +264,26 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
         }
 
         @JvmStatic
-        @NonNull
         @UiThread
-        fun bind(@NonNull target: Dialog): Destroyable {
+        fun bind(target: Dialog): Destroyable {
             return bind(target, target.window?.decorView)
         }
 
         @JvmStatic
-        @NonNull
         @UiThread
-        fun bind(@NonNull target: Any, @NonNull source: Activity): Destroyable {
+        fun bind(target: Any, source: Activity): Destroyable {
             return bind(target, source.window.decorView)
         }
 
         @JvmStatic
-        @NonNull
         @UiThread
-        fun bind(@NonNull target: Any, @NonNull source: Dialog): Destroyable {
+        fun bind(target: Any, source: Dialog): Destroyable {
             return bind(target, source.window?.decorView)
         }
 
         @JvmStatic
-        @NonNull
         @UiThread
-        fun bind(@NonNull target: Any, @NonNull source: View?): Destroyable {
+        fun bind(target: Any, source: View?): Destroyable {
             val constructor = findBindingConstructorForClass(target.javaClass)
                 ?: return Destroyable.EMPTY_DESTROYABLE
             return try {
@@ -304,7 +302,6 @@ class WinAnalytics private constructor(private val configuration: WinConfigurati
         }
 
         @Suppress("UNCHECKED_CAST")
-        @Nullable
         @CheckResult
         @UiThread
         private fun findBindingConstructorForClass(cls: Class<*>?): Constructor<out Destroyable>? {

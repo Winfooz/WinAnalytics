@@ -11,16 +11,18 @@ dependencies {
     implementation project(':winanalytics-annotations')
 
     // Code generation library for kotlin.
-    implementation 'com.squareup:kotlinpoet:0.6.0'
+    implementation 'com.squareup:kotlinpoet:1.0.0'
 
     // Code generation library for java.
-    implementation 'com.squareup:javapoet:1.9.0'
+    implementation 'com.squareup:javapoet:1.11.1'
 
     // AutoService library for auto generate javax.annotation.processing.Processor file
     compileOnly 'com.google.auto.service:auto-service:1.0-rc4'
 
     // Auto Common for use annotation processing utils
     implementation 'com.google.auto:auto-common:0.10'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.10"
 }
 
 checkstyle {

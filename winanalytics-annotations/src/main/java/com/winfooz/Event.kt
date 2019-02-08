@@ -11,5 +11,7 @@ package com.winfooz
 annotation class Event(
     val value: String,
     val timestamp: Boolean = false,
-    val events: Array<Data> = []
+    val events: Array<Data> = [],
+    val add: Array<Data> = [],
+    val remove: Array<Key> = []
 )

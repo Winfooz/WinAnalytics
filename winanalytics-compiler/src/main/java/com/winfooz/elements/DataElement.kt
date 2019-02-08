@@ -13,11 +13,11 @@ import javax.tools.Diagnostic
  *
  * @author Mohamed Hamdan
  */
-class DataElement(
-    private val data: Data,
-    private val messager: Messager,
-    private val element: Element,
-    private val parameters: List<VariableElement> = mutableListOf()
+data class DataElement(
+    val data: Data,
+    val messager: Messager,
+    val element: Element,
+    val parameters: List<VariableElement> = mutableListOf()
 ) {
 
     var name: String = ""
@@ -70,8 +70,9 @@ class DataElement(
         var realReference = references[0]
         kotlinReference = references[0]
         references.subList(1, references.size).forEach {
-            val ref = ".get${it.substring(0, 1).toUpperCase()}${it.substring(1)}() == null ? null : $realReference.get${it.substring(0, 1).toUpperCase()}${it.substring(1)}()"
-            realReference += ".get${it.substring(0, 1).toUpperCase()}${it.substring(1)}()"
+            val name = "${it.substring(0, 1).toUpperCase()}${it.substring(1)}"
+            val ref = ".get$name() == null ? null : $realReference.get$name()"
+            realReference += ".get$name()"
             newReference += ref
             kotlinReference += "?.$it"
         }

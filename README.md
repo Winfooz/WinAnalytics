@@ -1,7 +1,7 @@
 # WinAnalytics(Beta) library
 [![Build Status](https://travis-ci.org/Winfooz/WinAnalytics.svg?branch=master)](https://travis-ci.org/Winfooz/WinAnalytics)
 [![Deploy Status](https://app.buddy.works/mohamednayef95/winanalytics-1/pipelines/pipeline/158574/badge.svg?token=071324226326a701b263c3a2755acc1f179227f6bb2f1d11c84cbbfd3e77c732 "Deploy Status")](https://app.buddy.works/mohamednayef95/winanalytics-1/pipelines/pipeline/158574)
-[![Download](https://api.bintray.com/packages/mnayef95/WinAnalytics/com.winfooz.winanalytics%3Awinanalytics/images/download.svg) ](https://bintray.com/mnayef95/WinAnalytics/com.winfooz.winanalytics%3Awinanalytics/_latestVersion)
+[![Download](https://api.bintray.com/packages/mnayef95/WinAnalytics/com.winfooz:winanalytics/images/download.svg) ](https://bintray.com/mnayef95/WinAnalytics/com.winfooz.winanalytics%3Awinanalytics/_latestVersion)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-WinAnalytics-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/7197)
 [![Gitter](https://badges.gitter.im/WinAnalyticsChat/WinAnalytics.svg)](https://gitter.im/WinAnalyticsChat/WinAnalytics?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Winfooz/WinAnalytics/blob/master/LICENSE)
@@ -173,7 +173,7 @@ then after add `@Analytics` for your call you need to specify what event you wan
 @Analytics
 public interface JavaMainActivityAnalytics {
 
-    // That means this analyics will fire after "posts" api response success and "name" means you should use call arguments whitch named with "getPostsSuccess"
+    // That means this analyics will fire after "posts" api response success and "name" means you should use call arguments which named with "getPostsSuccess"
     @CallSuccess(value = "posts", name = "getPostsSuccess")
     @Event(
             value = "Failed get posts",
@@ -274,21 +274,21 @@ public class JavaMainActivity extends AppCompatActivity {
 # Download
 
 ```groovy
-repositories {
-    maven {
-        url  "https://dl.bintray.com/mnayef95/WinAnalytics"
-    }
-}
-
 dependencies {
     // if you want log retroift calls events you need to add this dependency
-    implementation 'com.winfooz:winanalytics-retroft:1.0.10-RC'
+    implementation 'com.winfooz:winanalytics-retroft:1.0.0'
 
     // but if you want just log clicks events or manually events you need to add this dependency
-    implementation 'com.winfooz:winanalytics:1.0.10-RC'
+    implementation 'com.winfooz:winanalytics:1.0.0'
 
     // Always you need to add this dependency.
-    kapt 'com.winfooz:winanalytics-compiler:1.0.10-RC'
+    kapt 'com.winfooz:winanalytics-compiler:1.0.0'
+    
+    // If you want use firebase analytics
+    implementation 'com.winfooz:adapter-firebase:1.0.0'
+    
+    // If you want use mixpanel analytics
+    implementation 'com.winfooz:adapter-mixpanel:1.0.0'
 }
 ```
 

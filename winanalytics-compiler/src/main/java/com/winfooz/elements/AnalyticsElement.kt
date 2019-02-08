@@ -57,7 +57,9 @@ class AnalyticsElement(
                 val callSuccess = method.getAnnotation(CallSuccess::class.java)
                 if (callSuccess != null) {
                     if (events.size > 0) {
-                        val params = events.firstOrNull { e -> e.methodName == method.simpleName.toString() }?.parameters?.toMutableList()
+                        val params = events.firstOrNull { e ->
+                            e.methodName == method.simpleName.toString()
+                        }?.parameters?.toMutableList()
                         params?.let { p ->
                             successes.add(CallSuccessElement(callSuccess, messager, method, p))
                         }
@@ -66,7 +68,9 @@ class AnalyticsElement(
                 val callFailure = method.getAnnotation(CallFailure::class.java)
                 if (callFailure != null) {
                     if (events.size > 0) {
-                        val params = events.firstOrNull { e -> e.methodName == method.simpleName.toString() }?.parameters?.toMutableList()
+                        val params = events.firstOrNull { e ->
+                            e.methodName == method.simpleName.toString()
+                        }?.parameters?.toMutableList()
                         params?.let { p ->
                             failures.add(CallFailureElement(callFailure, messager, method, p))
                         }

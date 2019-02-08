@@ -9,6 +9,6 @@ package com.winfooz
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
 annotation class Screen(
-    val value: String,
+    val value: String = "",
     val timestamp: Boolean = false
 )

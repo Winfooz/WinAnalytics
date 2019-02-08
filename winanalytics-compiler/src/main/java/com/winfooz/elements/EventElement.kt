@@ -1,6 +1,7 @@
 package com.winfooz.elements
 
 import com.winfooz.Event
+import com.winfooz.Key
 import javax.annotation.processing.Messager
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.VariableElement
@@ -21,6 +22,8 @@ class EventElement(
     var methodName: String = element.simpleName.toString()
     var eventName: String = ""
     var data: MutableList<DataElement> = mutableListOf()
+    var addedData: MutableList<DataElement> = mutableListOf()
+    var removedData: MutableList<Key> = mutableListOf()
     val parameters: List<VariableElement> by lazy { element.parameters }
 
     init {
@@ -39,11 +42,11 @@ class EventElement(
                 messager.printMessage(Diagnostic.Kind.ERROR, "${element.simpleName} event cannot be empty", element)
             }
             event.events.isNotEmpty() -> {
-                event.events.forEach {
-                    data.add(DataElement(it, messager, element, parameters))
-                }
+                event.events.forEach { data.add(DataElement(it, messager, element, parameters)) }
             }
         }
+        event.add.forEach { addedData.add(DataElement(it, messager, element, parameters)) }
+        event.remove.forEach { removedData.add(it) }
         eventName = event.value
     }
 }
