@@ -8,7 +8,6 @@
 ![GitHub](https://img.shields.io/badge/Support-Kotlin%20%7C%20Java-lightgrey.svg)
 
 A light-weight android library that can be quickly integrated into any app to use analytics tools.
-- Full Kotlin support.
 - Custom adapters for support all analytical tools.
 - Annotations based.
 - Support Retrofit calls for log events automatically.
